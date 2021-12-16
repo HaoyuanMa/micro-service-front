@@ -4,7 +4,56 @@ import request from "@utils/request";
  * 商品详情
  * */
 export function getProductDetail(id) {
-  return request.get("/product/detail/" + id, {}, { login: false });
+  //return request.get("/product/detail/" + id, {}, { login: false });
+  return new Promise(resolve => {
+    resolve({
+      data: {
+        id: id,
+        productAttr: {
+          id: 1,
+          product_id: 2,
+          attr_name: "mahdyc",
+          type: 1
+        },
+        fellowInfo: {
+          username: "马浩元",
+          sign: "没有签名",
+          gender: 1,
+          age: 20,
+          status: 0,
+          id: 1,
+          mer_id: 0,
+          image: "kjdsfkjf",
+          store_name: "sdfdsf",
+          store_info: "dsfsd",
+          keyword: "fljdsf",
+          price: 20.0,
+          sales: 500,
+          stock: 50
+        },
+        productValue: 10,
+        priceName: 10,
+        reply: [
+          {
+            header: "sdsfsdf",
+            username: "mmm",
+            fellow_name: "mahaoyuan",
+            star: 5,
+            content: "nice!!!"
+          },
+          {
+            header: "sdsfsdf",
+            username: "mmm",
+            fellow_name: "mahaoyuan",
+            star: 5,
+            content: "very good"
+          }
+        ],
+        replyChance: 95,
+        replyCount: 500
+      }
+    });
+  });
 }
 
 /*
@@ -58,15 +107,19 @@ export function getSearchKeyword() {
 /**
  * 产品评论列表
  */
-export function getReplyList(id, q) {
-  return request.get("/reply/list/" + id, q, { login: false });
+export function getReplyList(q) {
+  return request.get("/fellow/fellowcomment/list/", q, { login: false });
 }
 
 /**
  * 产品评价数量和好评度
  */
 export function getReplyConfig(id) {
-  return request.get("/reply/config/" + id, {}, { login: false });
+  return request.get(
+    "/fellow/fellowcomment/config/",
+    { fellow_id: id },
+    { login: false }
+  );
 }
 
 /**

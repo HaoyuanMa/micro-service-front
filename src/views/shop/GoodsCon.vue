@@ -21,148 +21,21 @@
     </div>
     <div id="title0">
       <product-con-swiper
-        :img-urls="storeInfo.slider_image"
-        :videoline="storeInfo.video_link"
+        :img-urls="fellowInfo.slider_image"
       ></product-con-swiper>
       <div class="wrapper">
         <div class="share acea-row row-between row-bottom">
-          <div class="money font-color-red">
-            ￥<span class="num">{{ storeInfo.price }}</span
-            ><span
-              class="vip-money"
-              v-if="storeInfo.vip_price && storeInfo.vip_price > 0"
-              >￥{{ storeInfo.vip_price }}</span
-            ><img
-              src="@assets/images/vip.png"
-              class="image"
-              v-if="storeInfo.vip_price && storeInfo.vip_price > 0"
-            />
+          <div class="money">
+            <span class="num">{{ fellowInfo.username }}</span>
           </div>
-          <div
-            class="iconfont icon-fenxiang"
-            @click="listenerActionSheet"
-          ></div>
         </div>
-        <div class="introduce">{{ storeInfo.store_name }}</div>
+        <div class="introduce">{{ fellowInfo.sign }}</div>
         <div class="label acea-row row-between-wrapper">
-          <div>原价:￥{{ storeInfo.ot_price }}</div>
-          <div>库存:{{ storeInfo.stock }}{{ storeInfo.unit_name }}</div>
-          <div>销量:{{ storeInfo.fsales }}{{ storeInfo.unit_name }}</div>
-        </div>
-        <div
-          class="coupon acea-row row-between-wrapper"
-          @click="couponTap"
-          v-if="couponList.length"
-        >
-          <div class="hide line1 acea-row">
-            优惠券：
-            <div
-              class="activity"
-              v-for="(item, index) in couponList"
-              :key="index"
-            >
-              满{{ item.use_min_price }}减{{ item.coupon_price }}
-            </div>
-          </div>
-          <div class="iconfont icon-jiantou"></div>
-        </div>
-        <div class="coupon acea-row row-between-wrapper" v-if="activity.length">
-          <div class="line1 acea-row">
-            活&nbsp;&nbsp;&nbsp;动：
-            <div
-              v-for="(item, index) in activity"
-              :key="index"
-              @click="goDetail(item)"
-            >
-              <div
-                class="acea-row row-center-wrapper"
-                v-if="item.type === '1'"
-                :class="{
-                  activity_pin: index === 0,
-                  activity_miao: index === 1,
-                  activity_kan: index === 2
-                }"
-              >
-                <span class="iconfonts iconfont icon-shenhezhong"></span>
-                <span class="activity_title">&nbsp;参与秒杀</span>
-              </div>
-              <div
-                class="acea-row row-center-wrapper"
-                v-if="item.type === '2'"
-                :class="{
-                  activity_pin: index === 0,
-                  activity_miao: index === 1,
-                  activity_kan: index === 2
-                }"
-              >
-                <span class="iconfonts iconfont icon-kanjia"></span>
-                <span class="activity_title">&nbsp;参与砍价</span>
-              </div>
-              <div
-                class="acea-row row-center-wrapper"
-                v-if="item.type === '3'"
-                :class="{
-                  activity_pin: index === 0,
-                  activity_miao: index === 1,
-                  activity_kan: index === 2
-                }"
-              >
-                <span class="iconfonts iconfont icon-pintuan"></span>
-                <span class="activity_title">&nbsp;参与拼团</span>
-              </div>
-            </div>
-          </div>
+          <div>性别: {{ getGender(fellowInfo.gender) }}</div>
+          <div>年龄: {{ fellowInfo.age }}</div>
+          <div>状态: {{ getStatus(fellowInfo.status) }}</div>
         </div>
       </div>
-      <div
-        class="attribute acea-row row-between-wrapper"
-        @click="selecAttrTap"
-        v-if="attr.productAttr.length"
-      >
-        <div>
-          {{ attrTxt }}：<span class="atterTxt">{{ attrValue }}</span>
-        </div>
-        <div class="iconfont icon-jiantou"></div>
-      </div>
-      <!--<div-->
-      <!--class="store-info"-->
-      <!--v-if="system_store.id !== undefined && storeSelfMention"-->
-      <!--&gt;-->
-      <!--<div-->
-      <!--class="acea-row row-between-wrapper store-box"-->
-      <!--@click="showStoreList"-->
-      <!--&gt;-->
-      <!--<div class="title">门店信息</div>-->
-      <!--<div class="iconfont icon-jiantou"></div>-->
-      <!--</div>-->
-      <!--<div class="info acea-row row-between-wrapper">-->
-      <!--<div class="pictrue"><img :src="storeItems.image" /></div>-->
-      <!--<div class="text">-->
-      <!--<div class="name line1">-->
-      <!--{{ storeItems.name }}-->
-      <!--</div>-->
-      <!--<div class="address acea-row row-middle" @click="showChang">-->
-      <!--<span class="addressTxt line1 address_tit"-->
-      <!--&gt;{{ storeItems.address-->
-      <!--}}{{ ", " + storeItems.detailed_address }}</span-->
-      <!--&gt;<span class="iconfont icon-youjian"></span>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--<div class="addressBox">-->
-      <!--<a-->
-      <!--class="iconfont icon-dadianhua01 font-color-red phone"-->
-      <!--:href="'tel:' + storeItems.phone"-->
-      <!--&gt;</a>-->
-      <!--<div-->
-      <!--class="addressTxt corlor-red"-->
-      <!--@click="showChang"-->
-      <!--v-if="storeItems.range"-->
-      <!--&gt;-->
-      <!--距离{{ storeItems.range }}千米-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
-      <!--</div>-->
     </div>
     <div class="userEvaluation" id="title1">
       <div class="title acea-row row-between-wrapper">
@@ -173,56 +46,11 @@
           ></span
         ></router-link>
       </div>
-      <user-evaluation :reply="reply"></user-evaluation>
-    </div>
-    <div class="superior" v-if="goodList.length > 0" id="title2">
-      <div class="title acea-row row-center-wrapper">
-        <img src="@assets/images/ling.png" />
-        <div class="titleTxt">优品推荐</div>
-        <img src="@assets/images/ling.png" />
-      </div>
-      <template>
-        <div class="slider-banner banner">
-          <swiper :options="swiperRecommend">
-            <swiper-slide v-for="(item, index) in goodList" :key="index">
-              <div class="list acea-row row-middle">
-                <div
-                  class="item"
-                  v-for="val in item.list"
-                  :key="val.image"
-                  @click="goGoods(val)"
-                >
-                  <div class="pictrue">
-                    <img :src="val.image" />
-                    <span
-                      class="pictrue_log pictrue_log_class"
-                      v-if="val.activity && val.activity.type === '1'"
-                      >秒杀</span
-                    >
-                    <span
-                      class="pictrue_log pictrue_log_class"
-                      v-if="val.activity && val.activity.type === '2'"
-                      >砍价</span
-                    >
-                    <span
-                      class="pictrue_log pictrue_log_class"
-                      v-if="val.activity && val.activity.type === '3'"
-                      >拼团</span
-                    >
-                  </div>
-                  <div class="name line1">{{ val.store_name }}</div>
-                  <div class="money font-color-red">¥{{ val.price }}</div>
-                </div>
-              </div>
-            </swiper-slide>
-            <div class="swiper-pagination" slot="pagination"></div>
-          </swiper>
-        </div>
-      </template>
+      <user-evaluation :reply="reply.slice(0, 2)"></user-evaluation>
     </div>
     <div class="product-intro" id="title3">
       <div class="title">产品介绍</div>
-      <div class="conter" v-html="storeInfo.description"></div>
+      <div class="conter" v-html="fellowInfo.description"></div>
     </div>
     <div style="height:1.2rem;"></div>
     <div class="footer acea-row row-between-wrapper">
@@ -233,7 +61,7 @@
       <div class="item" @click="setCollect">
         <div
           class="iconfont"
-          :class="storeInfo.userCollect ? 'icon-shoucang1' : 'icon-shoucang'"
+          :class="fellowInfo.userCollect ? 'icon-shoucang1' : 'icon-shoucang'"
         ></div>
         <div>收藏</div>
       </div>
@@ -257,12 +85,6 @@
         <div class="buy bg-color-hui" v-else>已售罄</div>
       </div>
     </div>
-    <Share-red-packets
-      :priceName="priceName"
-      v-on:changeFun="changeFun"
-      v-if="priceName !== 0"
-    ></Share-red-packets>
-    <CouponPop v-on:changeFun="changeFun" :coupon="coupon"></CouponPop>
     <Product-window
       v-on:changeFun="changeFun"
       :attr="attr"
@@ -277,23 +99,6 @@
       v-on:setShareInfoStatus="setShareInfoStatus"
       :shareInfoStatus="shareInfoStatus"
     ></ShareInfo>
-    <div
-      class="generate-posters acea-row row-middle"
-      :class="posters ? 'on' : ''"
-    >
-      <div
-        class="item"
-        v-if="weixinStatus === true"
-        @click="setShareInfoStatus"
-      >
-        <div class="iconfont icon-weixin3"></div>
-        <div class="">发送给朋友</div>
-      </div>
-      <div class="item" @click="setPosterImageStatus">
-        <div class="iconfont icon-haibao"></div>
-        <div class="">生成海报</div>
-      </div>
-    </div>
     <div
       class="mask"
       @touchmove.prevent
@@ -320,12 +125,9 @@
   </div>
 </template>
 <script>
-import { swiper, swiperSlide } from "vue-awesome-swiper";
 import "@assets/css/swiper.min.css";
 import ProductConSwiper from "@components/ProductConSwiper";
 import UserEvaluation from "@components/UserEvaluation";
-import ShareRedPackets from "@components/ShareRedPackets";
-import CouponPop from "@components/CouponPop";
 import ProductWindow from "@components/ProductWindow";
 import StorePoster from "@components/StorePoster";
 import ShareInfo from "@components/ShareInfo";
@@ -335,32 +137,19 @@ import {
   getProductDetail,
   postCartAdd,
   getCartCount,
-  getProductCode,
-  storeListApi
+  getProductCode
 } from "@api/store";
-import {
-  getCoupon,
-  getCollectAdd,
-  getCollectDel,
-  getUserInfo
-} from "@api/user";
+import { getCollectAdd, getCollectDel, getUserInfo } from "@api/user";
 import { isWeixin } from "@utils/index";
 import { wechatEvevt } from "@libs/wechat";
 import { imageBase64 } from "@api/public";
 import { mapGetters } from "vuex";
-import cookie from "@utils/store/cookie";
 let NAME = "GoodsCon";
-const LONGITUDE = "user_longitude";
-const LATITUDE = "user_latitude";
 export default {
   name: NAME,
   components: {
-    swiper,
-    swiperSlide,
     ProductConSwiper,
     UserEvaluation,
-    ShareRedPackets,
-    CouponPop,
     ProductWindow,
     StorePoster,
     ShareInfo
@@ -392,7 +181,7 @@ export default {
       isOpen: false, //是否打开属性组件
       productValue: [],
       id: 0,
-      storeInfo: {},
+      fellowInfo: {},
       couponList: [],
       attrTxt: "请选择",
       attrValue: "",
@@ -431,7 +220,7 @@ export default {
     $route(n) {
       if (n.name === NAME) {
         this.id = n.params.id;
-        this.storeInfo.slider_image = [];
+        this.fellowInfo.slider_image = [];
         this.productCon();
       }
     }
@@ -442,13 +231,17 @@ export default {
   mounted: function() {
     document.addEventListener("scroll", this.onScroll, false);
     this.id = this.$route.params.id;
-    this.storeInfo.slider_image = [];
+    this.fellowInfo.slider_image = [];
     this.productCon();
-    this.coupons();
     window.addEventListener("scroll", this.handleScroll);
-    this.getList();
   },
   methods: {
+    getGender: g => {
+      return g === 1 ? "男" : "女";
+    },
+    getStatus: s => {
+      return s ? "忙碌" : "空闲";
+    },
     // 商品详情跳转
     goDetail(item) {
       if (item.type === "1") {
@@ -464,22 +257,6 @@ export default {
           path: "/activity/group_detail/" + item.id
         });
       }
-    },
-    // 获取门店列表数据
-    getList() {
-      let data = {
-        latitude: cookie.get(LATITUDE) || "", //纬度
-        longitude: cookie.get(LONGITUDE) || "", //经度
-        page: 1,
-        limit: 10
-      };
-      storeListApi(data)
-        .then(res => {
-          this.storeItems = res.data.list[0];
-        })
-        .catch(err => {
-          console.log(err);
-        });
     },
     handleScroll() {
       let top = document.body.scrollTop || document.documentElement.scrollTop;
@@ -557,7 +334,7 @@ export default {
       }
     },
     updateTitle() {
-      document.title = this.storeInfo.store_name || this.$route.meta.title;
+      document.title = this.fellowInfo.store_name || this.$route.meta.title;
     },
     // 调转到门店列表
     showStoreList() {
@@ -565,7 +342,7 @@ export default {
       this.$router.push("/shop/storeList/details");
     },
     setOpenShare: function() {
-      var data = this.storeInfo;
+      var data = this.fellowInfo;
       var href = location.href;
       if (isWeixin()) {
         if (this.isLogin) {
@@ -653,43 +430,36 @@ export default {
       let that = this;
       getProductDetail(that.id)
         .then(res => {
-          that.$set(that, "storeInfo", res.data.storeInfo);
+          that.$set(that, "fellowInfo", res.data.fellowInfo);
           that.$set(that.attr, "productAttr", res.data.productAttr);
           that.$set(that, "productValue", res.data.productValue);
           that.$set(that, "replyCount", res.data.replyCount);
           that.$set(that, "replyChance", res.data.replyChance);
-          that.reply = res.data.reply ? [res.data.reply] : [];
+          that.reply = res.data.reply ? res.data.reply : [];
           that.$set(that, "reply", that.reply);
           that.$set(that, "priceName", res.data.priceName);
-          that.posterData.image = that.storeInfo.image_base;
-          that.activity = res.data.activity ? res.data.activity : [];
-          if (that.storeInfo.store_name.length > 30) {
+          that.posterData.image = that.fellowInfo.image_base;
+          if (that.fellowInfo.store_name.length > 30) {
             that.posterData.title =
-              that.storeInfo.store_name.substring(0, 30) + "...";
+              that.fellowInfo.store_name.substring(0, 30) + "...";
           } else {
-            that.posterData.title = that.storeInfo.store_name;
+            that.posterData.title = that.fellowInfo.store_name;
           }
           that.storeSelfMention = res.data.store_self_mention ? true : false;
-          that.posterData.price = that.storeInfo.price;
-          that.posterData.code = that.storeInfo.code_base;
+          that.posterData.price = that.fellowInfo.price;
+          that.posterData.code = that.fellowInfo.code_base;
           that.system_store = res.data.system_store;
-          let good_list = res.data.good_list || [];
           let goodArray = [];
-          let count = Math.ceil(good_list.length / 6);
-          for (let i = 0; i < count; i++) {
-            var list = good_list.slice(i * 6, i * 6 + 6);
-            if (list.length) goodArray.push({ list: list });
-          }
           that.mapKey = res.data.mapKey;
-          that.$set(that, "goodList", goodArray);
           let navList = ["商品", "评价", "详情"];
           if (goodArray.length) {
             navList.splice(2, 0, "推荐");
           }
           that.navList = navList;
+
           that.updateTitle();
           that.DefaultSelect();
-          that.getCartCount();
+          //that.getCartCount();
           that.getImageBase64();
           that.setOpenShare();
         })
@@ -729,7 +499,7 @@ export default {
         this.$set(
           this.attr.productSelect,
           "store_name",
-          this.storeInfo.store_name
+          this.fellowInfo.store_name
         );
         this.$set(this.attr.productSelect, "image", productSelect.image);
         this.$set(this.attr.productSelect, "price", productSelect.price);
@@ -742,10 +512,10 @@ export default {
         this.$set(
           this.attr.productSelect,
           "store_name",
-          this.storeInfo.store_name
+          this.fellowInfo.store_name
         );
-        this.$set(this.attr.productSelect, "image", this.storeInfo.image);
-        this.$set(this.attr.productSelect, "price", this.storeInfo.price);
+        this.$set(this.attr.productSelect, "image", this.fellowInfo.image);
+        this.$set(this.attr.productSelect, "price", this.fellowInfo.price);
         this.$set(this.attr.productSelect, "stock", 0);
         this.$set(this.attr.productSelect, "unique", "");
         this.$set(this.attr.productSelect, "cart_num", 0);
@@ -755,15 +525,15 @@ export default {
         this.$set(
           this.attr.productSelect,
           "store_name",
-          this.storeInfo.store_name
+          this.fellowInfo.store_name
         );
-        this.$set(this.attr.productSelect, "image", this.storeInfo.image);
-        this.$set(this.attr.productSelect, "price", this.storeInfo.price);
-        this.$set(this.attr.productSelect, "stock", this.storeInfo.stock);
+        this.$set(this.attr.productSelect, "image", this.fellowInfo.image);
+        this.$set(this.attr.productSelect, "price", this.fellowInfo.price);
+        this.$set(this.attr.productSelect, "stock", this.fellowInfo.stock);
         this.$set(
           this.attr.productSelect,
           "unique",
-          this.storeInfo.unique || ""
+          this.fellowInfo.unique || ""
         );
         this.$set(this.attr.productSelect, "cart_num", 1);
         this.$set(this, "attrValue", "");
@@ -804,29 +574,6 @@ export default {
       this[action] && this[action](value);
     },
     //打开优惠券插件；
-    couponTap: function() {
-      let that = this;
-      that.coupons();
-      that.coupon.coupon = true;
-    },
-    changecoupon: function(msg) {
-      this.coupon.coupon = msg;
-      this.coupons();
-    },
-    currentcoupon: function(res) {
-      let that = this;
-      that.coupon.coupon = false;
-      that.$set(that.coupon.list[res], "is_use", true);
-    },
-    //可领取优惠券接口；
-    coupons: function() {
-      let that = this,
-        q = { page: 1, limit: 20, type: 1, product_id: that.id };
-      getCoupon(q).then(res => {
-        that.$set(that, "couponList", res.data || []);
-        that.$set(that.coupon, "list", res.data);
-      });
-    },
     //打开属性插件；
     selecAttrTap: function() {
       this.attr.cartAttr = true;
@@ -848,8 +595,8 @@ export default {
         this.$set(this, "attrValue", res);
         this.$set(this, "attrTxt", "已选择");
       } else {
-        this.$set(this.attr.productSelect, "image", this.storeInfo.image);
-        this.$set(this.attr.productSelect, "price", this.storeInfo.price);
+        this.$set(this.attr.productSelect, "image", this.fellowInfo.image);
+        this.$set(this.attr.productSelect, "price", this.fellowInfo.price);
         this.$set(this.attr.productSelect, "stock", 0);
         this.$set(this.attr.productSelect, "unique", "");
         this.$set(this.attr.productSelect, "cart_num", 0);
@@ -860,15 +607,15 @@ export default {
     //收藏商品
     setCollect: function() {
       let that = this,
-        id = that.storeInfo.id,
+        id = that.fellowInfo.id,
         category = "product";
-      if (that.storeInfo.userCollect) {
+      if (that.fellowInfo.userCollect) {
         getCollectDel(id, category).then(function() {
-          that.storeInfo.userCollect = !that.storeInfo.userCollect;
+          that.fellowInfo.userCollect = !that.fellowInfo.userCollect;
         });
       } else {
         getCollectAdd(id, category).then(function() {
-          that.storeInfo.userCollect = !that.storeInfo.userCollect;
+          that.fellowInfo.userCollect = !that.fellowInfo.userCollect;
         });
       }
     },

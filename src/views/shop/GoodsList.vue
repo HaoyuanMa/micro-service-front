@@ -4,7 +4,7 @@
       <div class="search bg-color-red acea-row row-between-wrapper">
         <div class="input acea-row row-between-wrapper">
           <span class="iconfont icon-sousuo"></span>
-          <input placeholder="搜索商品信息" v-model="where.keyword" />
+          <input placeholder="搜索陪诊员" v-model="where.keyword" />
         </div>
         <div
           class="iconfont"
@@ -89,7 +89,6 @@ import Recommend from "@components/Recommend";
 import { getProducts } from "@api/store";
 import debounce from "lodash.debounce";
 import Loading from "@components/Loading";
-import { goShopDetail } from "@libs/order";
 
 export default {
   name: "GoodsList",
@@ -152,9 +151,7 @@ export default {
     },
     // 商品详情跳转
     goDetail(item) {
-      goShopDetail(item).then(() => {
-        this.$router.push({ path: "/detail/" + item.id });
-      });
+      this.$router.push({ path: "/detail/" + item.id });
     },
     updateTitle() {
       document.title = this.title || this.$route.meta.title;

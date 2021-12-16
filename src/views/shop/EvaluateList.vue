@@ -47,7 +47,7 @@ export default {
   props: {},
   data: function() {
     return {
-      product_id: 0,
+      fellow_id: 0,
       replyData: {},
       navList: [
         { evaluate: "全部", num: 0 },
@@ -67,45 +67,51 @@ export default {
   watch: {
     $route(n) {
       if (n.name === NAME) {
-        this.product_id = this.$route.params.id;
+        this.fellow_id = this.$route.params.id;
         this.loadend = false;
         this.page = 1;
         this.$set(this, "reply", []);
-        this.getProductReplyCount();
-        this.getProductReplyList();
+        this.getFellowReplyCount();
+        this.getFellowReplyList();
       }
     }
   },
   mounted: function() {
-    this.product_id = this.$route.params.id;
-    this.getProductReplyCount();
-    this.getProductReplyList();
+    this.fellow_id = this.$route.params.id;
+    this.getFellowReplyCount();
+    this.getFellowReplyList();
     this.$scroll(this.$refs.container, () => {
-      !this.loading && this.getProductReplyList();
+      !this.loading && this.getFellowReplyCount();
     });
   },
   methods: {
-    getProductReplyCount: function() {
+    getFellowReplyCount: function() {
       let that = this;
-      getReplyConfig(that.product_id).then(res => {
-        that.$set(that, "replyData", res.data);
-        that.navList[0].num = res.data.sum_count;
-        that.navList[1].num = res.data.good_count;
-        that.navList[2].num = res.data.in_count;
-        that.navList[3].num = res.data.poor_count;
+      getReplyConfig(that.fellow_id).then(data => {
+        that.$set(that, "replyData", data);
+        that.navList[0].num = data.sum_count;
+        that.navList[1].num = data.good_count;
+        that.navList[2].num = data.in_count;
+        that.navList[3].num = data.poor_count;
       });
     },
-    getProductReplyList: function() {
+    getFellowReplyList: function() {
       let that = this;
       if (that.loading) return; //阻止下次请求（false可以进行请求）；
       if (that.loadend) return; //阻止结束当前请求（false可以进行请求）；
       that.loading = true;
-      let q = { page: that.page, limit: that.limit, type: that.currentActive };
-      getReplyList(that.product_id, q).then(res => {
+      let q = {
+        fellow_id: that.fellow_id,
+        page: that.page,
+        limit: that.limit,
+        type: that.currentActive
+      };
+      getReplyList(q).then(res => {
+        console.log(res);
         that.loading = false;
         //apply();js将一个数组插入另一个数组;
-        that.reply.push.apply(that.reply, res.data);
-        that.loadend = res.data.length < that.limit; //判断所有数据是否加载完成；
+        that.reply.push.apply(that.reply, res.page.list);
+        that.loadend = res.page.length < that.limit; //判断所有数据是否加载完成；
         that.page = that.page + 1;
       });
     },

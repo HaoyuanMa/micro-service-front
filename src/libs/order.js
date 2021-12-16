@@ -1,7 +1,6 @@
 import { cancelOrder, takeOrder, delOrder, payOrder } from "@api/order";
 import dialog from "@utils/dialog";
 import { pay } from "@libs/wechat";
-import router from "../router";
 
 export function cancelOrderHandle(orderId) {
   return new Promise((resolve, reject) => {
@@ -89,30 +88,5 @@ export function payOrderHandle(orderId, type, from) {
         dialog.loading.close();
         dialog.toast({ mes: err.msg || "订单支付失败" });
       });
-  });
-}
-
-export function goShopDetail(item) {
-  return new Promise(resolve => {
-    if (item.activity && item.activity.type === "1") {
-      router.push({
-        path:
-          "/activity/seckill_detail/" +
-          item.activity.id +
-          "/" +
-          item.activity.time +
-          "/1"
-      });
-    } else if (item.activity && item.activity.type === "2") {
-      router.push({
-        path: "/activity/dargain_detail/" + item.activity.id
-      });
-    } else if (item.activity && item.activity.type === "3") {
-      router.push({
-        path: "/activity/group_detail/" + item.activity.id
-      });
-    } else {
-      resolve(item);
-    }
   });
 }
