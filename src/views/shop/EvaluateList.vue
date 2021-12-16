@@ -107,7 +107,6 @@ export default {
         type: that.currentActive
       };
       getReplyList(q).then(res => {
-        console.log(res);
         that.loading = false;
         //apply();js将一个数组插入另一个数组;
         that.reply.push.apply(that.reply, res.page.list);
@@ -121,7 +120,7 @@ export default {
       that.page = 1;
       that.loadend = false;
       that.$set(that, "reply", []);
-      that.getProductReplyList();
+      that.getFellowReplyList();
     }
   }
 };
