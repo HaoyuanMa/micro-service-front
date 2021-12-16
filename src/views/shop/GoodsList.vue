@@ -28,19 +28,12 @@
         <img src="@assets/images/down.png" v-if="price === 2" />
       </div>
       <div class="item" @click="set_where(2)">
-        销量
-        <img src="@assets/images/horn.png" v-if="stock === 0" />
-        <img src="@assets/images/up.png" v-if="stock === 1" />
-        <img src="@assets/images/down.png" v-if="stock === 2" />
+        年龄
+        <img src="@assets/images/horn.png" v-if="age === 0" />
+        <img src="@assets/images/up.png" v-if="age === 1" />
+        <img src="@assets/images/down.png" v-if="age === 2" />
       </div>
       <!-- down -->
-      <div
-        class="item"
-        :class="nows ? 'font-color-red' : ''"
-        @click="set_where(3)"
-      >
-        新品
-      </div>
     </div>
     <div
       class="list acea-row row-between-wrapper"
@@ -53,47 +46,27 @@
         :key="index"
         class="item"
         :class="Switch === true ? '' : 'on'"
-        :title="item.store_name"
+        :title="item.username"
       >
         <div class="pictrue" :class="Switch === true ? '' : 'on'">
-          <img :src="item.image" :class="Switch === true ? '' : 'on'" />
-          <span
-            class="pictrue_log_class"
-            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
-            v-if="item.activity && item.activity.type === '1'"
-            >秒杀</span
-          >
-          <span
-            class="pictrue_log_class"
-            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
-            v-if="item.activity && item.activity.type === '2'"
-            >砍价</span
-          >
-          <span
-            class="pictrue_log_class"
-            :class="Switch === true ? 'pictrue_log_big' : 'pictrue_log'"
-            v-if="item.activity && item.activity.type === '3'"
-            >拼团</span
-          >
+          <img :src="item.header" :class="Switch === true ? '' : 'on'" />
         </div>
         <div class="text" :class="Switch === true ? '' : 'on'">
-          <div class="name line1">{{ item.store_name }}</div>
+          <div class="name line1">{{ item.username }}</div>
+          <div class="vip acea-row row-between-wrapper">
+            {{ item.age }}岁 {{ getGender(item.gender) }}
+          </div>
           <div
             class="money font-color-red"
             :class="Switch === true ? '' : 'on'"
           >
             ￥<span class="num">{{ item.price }}</span>
           </div>
-          <div
-            class="vip acea-row row-between-wrapper"
-            :class="Switch === true ? '' : 'on'"
-          >
-            <div class="vip-money" v-if="item.vip_price && item.vip_price > 0">
-              ￥{{ item.vip_price }}<img src="@assets/images/vip.png" />
-            </div>
-            <div>已售{{ item.sales }}件</div>
-          </div>
         </div>
+      </div>
+      <div class="item">
+        <div class="pictrue"></div>
+        <div class="pictrue"></div>
       </div>
     </div>
     <Loading :loaded="loadend" :loading="loading"></Loading>
@@ -126,53 +99,25 @@ export default {
   },
   props: {},
   data: function() {
-    const { s = "", id = 0, title = "" } = this.$route.query;
+    const { s = "", title = "" } = this.$route.query;
 
     return {
-      hostProduct: [],
-      productList: [
-        {
-          activity: {
-            type: 1
-          },
-          store_name: "test",
-          price: 20.0,
-          sales: 500
-        },
-        {
-          activity: {
-            type: 1
-          },
-          store_name: "test",
-          price: 20.0,
-          sales: 500
-        },
-        {
-          activity: {
-            type: 1
-          },
-          store_name: "test",
-          price: 20.0,
-          sales: 500
-        }
-      ],
+      productList: [],
       Switch: true,
       where: {
         page: 1,
         limit: 8,
-        keyword: s,
-        sid: id, //二级分类id
-        news: 0,
-        priceOrder: "",
-        salesOrder: ""
+        order: "",
+        sidx: "",
+        keyword: s
       },
-      title: title && id ? title : "",
+      title: title ? title : "",
       loadTitle: "",
       loading: false,
       loadend: false,
       price: 0,
-      stock: 0,
-      nows: false
+      age: 0,
+      name: 0
     };
   },
   watch: {
@@ -181,31 +126,30 @@ export default {
     },
     $route(to) {
       if (to.name !== "GoodsList") return;
-      const { s = "", id = 0, title = "" } = to.query;
+      const { s = "", title = "" } = to.query;
 
-      if (s !== this.where.keyword || id !== this.where.sid) {
+      if (s !== this.where.keyword) {
         this.where.keyword = s;
         this.loadend = false;
         this.loading = false;
         this.where.page = 1;
-        this.where.sid = id;
-        this.title = title && id ? title : "";
-        this.nows = false;
+        this.title = title ? title : "";
         this.$set(this, "productList", []);
-        this.price = 0;
-        this.stock = 0;
-        this.get_product_list();
+        this.get_fellow_list();
       }
     }
   },
   mounted: function() {
     this.updateTitle();
-    this.get_product_list();
+    this.get_fellow_list();
     this.$scroll(this.$refs.container, () => {
-      !this.loading && this.get_product_list();
+      !this.loading && this.get_fellow_list();
     });
   },
   methods: {
+    getGender: g => {
+      return g === 1 ? "男" : "女";
+    },
     // 商品详情跳转
     goDetail(item) {
       goShopDetail(item).then(() => {
@@ -215,17 +159,19 @@ export default {
     updateTitle() {
       document.title = this.title || this.$route.meta.title;
     },
-    get_product_list: debounce(function() {
-      var that = this;
+    get_fellow_list: debounce(function() {
+      let that = this;
       if (that.loading) return; //阻止下次请求（false可以进行请求）；
       if (that.loadend) return; //阻止结束当前请求（false可以进行请求）；
       that.loading = true;
       this.setWhere();
       let q = that.where;
       getProducts(q).then(res => {
+        console.log("then:");
+        console.log(res);
         that.loading = false;
-        that.productList.push.apply(that.productList, res.data);
-        that.loadend = res.data.length < that.where.limit; //判断所有数据是否加载完成；
+        that.productList.push.apply(that.productList, res.page.list);
+        that.loadend = res.page.list.length < that.where.limit; //判断所有数据是否加载完成；
         that.where.page = that.where.page + 1;
       });
     }, 300),
@@ -234,28 +180,27 @@ export default {
       this.where.page = 1;
       this.loadend = false;
       this.loading = false;
-      this.get_product_list();
+      this.get_fellow_list();
     },
     //点击事件处理
     set_where: function(index) {
       let that = this;
       switch (index) {
         case 0:
-          return that.$router.push({ path: "/category" });
+          that.price = 0;
+          that.age = 0;
+          break;
         case 1:
           if (that.price === 0) that.price = 1;
           else if (that.price === 1) that.price = 2;
           else if (that.price === 2) that.price = 0;
-          that.stock = 0;
+          that.age = 0;
           break;
         case 2:
-          if (that.stock === 0) that.stock = 1;
-          else if (that.stock === 1) that.stock = 2;
-          else if (that.stock === 2) that.stock = 0;
+          if (that.age === 0) that.age = 1;
+          else if (that.age === 1) that.age = 2;
+          else if (that.age === 2) that.age = 0;
           that.price = 0;
-          break;
-        case 3:
-          that.nows = !that.nows;
           break;
         default:
           break;
@@ -263,26 +208,28 @@ export default {
       that.$set(that, "productList", []);
       that.where.page = 1;
       that.loadend = false;
-      that.get_product_list();
+      that.get_fellow_list();
     },
     //设置where条件
     setWhere: function() {
       let that = this;
       if (that.price === 0) {
-        that.where.priceOrder = "";
+        that.where.order = "";
+        that.where.sidx = "";
       } else if (that.price === 1) {
-        that.where.priceOrder = "asc";
+        that.where.order = "asc";
+        that.where.sidx = "price";
       } else if (that.price === 2) {
-        that.where.priceOrder = "desc";
+        that.where.order = "desc";
+        that.where.sidx = "price";
       }
-      if (that.stock === 0) {
-        that.where.salesOrder = "";
-      } else if (that.stock === 1) {
-        that.where.salesOrder = "asc";
-      } else if (that.stock === 2) {
-        that.where.salesOrder = "desc";
+      if (that.age === 1) {
+        that.where.order = "asc";
+        that.where.sidx = "age";
+      } else if (that.age === 2) {
+        that.where.order = "desc";
+        that.where.sidx = "age";
       }
-      that.where.news = that.nows ? "1" : "0";
     },
     switchTap: function() {
       let that = this;

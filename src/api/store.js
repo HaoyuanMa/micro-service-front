@@ -18,7 +18,9 @@ export function getProductCode(id) {
  * 商品列表
  * */
 export function getProducts(q) {
-  return request.get("/fellow/fellow/list", q, { login: false });
+  let result = request.get("/fellow/fellow/list", q, { login: false });
+  console.log(result);
+  return result;
 }
 
 /*
