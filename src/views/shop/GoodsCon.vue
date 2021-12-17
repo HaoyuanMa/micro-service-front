@@ -56,6 +56,8 @@
         <div>性别: {{ getGender(fellow.gender) }}</div>
         <div>年龄: {{ fellow.age }}</div>
         <div>地址: {{ getAddressStr() }}</div>
+        <div>联系电话: {{ fellow.mobile }}</div>
+        <div>电子邮件: {{ fellow.email }}</div>
         <div>简介:</div>
       </div>
       <div class="conter" v-html="'  ' + fellow.description"></div>
@@ -134,7 +136,7 @@ export default {
       let c = this.fellow.city;
       let r = this.fellow.region;
       let d = this.fellow.detailAddress;
-      let addressStr = p + (p ? "省" : "") + c + (c ? "市" : "") + r + "," + d;
+      let addressStr = (p !== null ? p + "省" : "") + c + "市" + r + "," + d;
       return addressStr;
     },
     getGender: g => {
