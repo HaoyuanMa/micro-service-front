@@ -21,11 +21,10 @@
               class="name"
               :class="item.id === checked ? 'font-color-red' : ''"
             >
-              {{ item.real_name }}<span class="phone">{{ item.phone }}</span>
+              {{ item.name }}<span class="phone">{{ item.phone }}</span>
             </div>
             <div class="line1">
-              {{ item.province }}{{ item.city }}{{ item.district
-              }}{{ item.detail }}
+              {{ getAddressStr(item) }}
             </div>
           </div>
           <span
@@ -68,9 +67,18 @@ export default {
   },
   mounted: function() {},
   methods: {
+    getAddressStr(item) {
+      let p = item.province;
+      let c = item.city;
+      let r = item.region;
+      let d = item.detailAddress;
+      let addressStr = (p !== null ? p + "省" : "") + c + "市" + r + "," + d;
+      return addressStr;
+    },
     getAddressList: function() {
       let that = this;
       getAddressList().then(res => {
+        console.log(res);
         that.addressList = res.data;
       });
     },
