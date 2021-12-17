@@ -29,12 +29,6 @@ export default {
           url: "/"
         },
         {
-          name: "订单",
-          icon1: "icon-yingyongchengxu-xianxing",
-          icon2: "icon-yingyongchengxu",
-          url: "/order/list"
-        },
-        {
           name: "我的",
           icon1: "icon-yonghu-xianxing",
           icon2: "icon-yonghu",
