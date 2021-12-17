@@ -68,6 +68,7 @@
         <div class="pictrue"></div>
         <div class="pictrue"></div>
       </div>
+      <div style="height:1.2rem;"></div>
     </div>
     <Loading :loaded="loadend" :loading="loading"></Loading>
     <div
