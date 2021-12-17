@@ -61,17 +61,16 @@
       <div class="conter" v-html="'  ' + fellow.description"></div>
     </div>
     <div style="height:1.2rem;"></div>
-    <div class="footer acea-row row-between-wrapper">
-      <div class="item" @click="setAttend">
-        <div
-          class="iconfont"
-          :class="fellow.userCollect ? 'icon-shoucang1' : 'icon-shoucang'"
-        ></div>
-        <div>关注</div>
-      </div>
-      <div class="bnt acea-row">
-        <div class="joinCart"></div>
-        <div class="buy" @click="submitOrder" v-if="fellow.status === 0">
+    <div class="order-submission">
+      <div class="footer acea-row row-between-wrapper">
+        <div class="item" @click="setAttend">
+          <div
+            class="iconfont"
+            :class="fellow.userCollect ? 'icon-shoucang1' : 'icon-shoucang'"
+          ></div>
+          <div>关注</div>
+        </div>
+        <div class="settlement" @click="submitOrder" v-if="fellow.status === 0">
           下单
         </div>
         <div class="buy bg-color-hui" v-else>陪诊员忙碌</div>
@@ -115,7 +114,7 @@ export default {
       if (n.name === NAME) {
         this.id = n.params.id;
         this.fellow.slider_image = [];
-        this.productCon();
+        this.fellowCon();
       }
     }
   },
@@ -131,13 +130,11 @@ export default {
   },
   methods: {
     getAddressStr() {
-      console.log(this.fellow);
       let p = this.fellow.province;
       let c = this.fellow.city;
       let r = this.fellow.region;
       let d = this.fellow.detailAddress;
       let addressStr = p + (p ? "省" : "") + c + (c ? "市" : "") + r + "," + d;
-      console.log(addressStr);
       return addressStr;
     },
     getGender: g => {
@@ -176,9 +173,6 @@ export default {
         titles = [];
       titles.push(document.querySelector("#title0"));
       titles.push(document.querySelector("#title1"));
-      if (this.goodList.length) {
-        titles.push(document.querySelector("#title2"));
-      }
       titles.push(document.querySelector("#title3"));
       titles.reduce((initial, title, index) => {
         if (
@@ -203,7 +197,6 @@ export default {
       let that = this;
       getFellowDetail(that.id)
         .then(data => {
-          console.log(data);
           that.$set(that, "fellow", data.fellow);
           that.$set(that, "replyCount", data.replyCount);
           that.$set(that, "replyChance", data.replyChance);
