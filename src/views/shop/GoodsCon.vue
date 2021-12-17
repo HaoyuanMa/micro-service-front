@@ -20,20 +20,18 @@
       </div>
     </div>
     <div id="title0">
-      <product-con-swiper
-        :img-urls="fellowInfo.slider_image"
-      ></product-con-swiper>
+      <product-con-swiper :img-urls="fellow.slider_image"></product-con-swiper>
       <div class="wrapper">
         <div class="share acea-row row-between row-bottom">
           <div class="money">
-            <span class="num">{{ fellowInfo.username }}</span>
+            <span class="num">{{ fellow.username }}</span>
           </div>
         </div>
-        <div class="introduce">{{ fellowInfo.sign }}</div>
+        <div class="introduce">{{ fellow.sign }}</div>
         <div class="label acea-row row-between-wrapper">
-          <div>性别: {{ getGender(fellowInfo.gender) }}</div>
-          <div>年龄: {{ fellowInfo.age }}</div>
-          <div>状态: {{ getStatus(fellowInfo.status) }}</div>
+          <div>性别: {{ getGender(fellow.gender) }}</div>
+          <div>年龄: {{ fellow.age }}</div>
+          <div>状态: {{ getStatus(fellow.status) }}</div>
         </div>
       </div>
     </div>
@@ -46,81 +44,38 @@
           ></span
         ></router-link>
       </div>
-      <user-evaluation :reply="reply.slice(0, 2)"></user-evaluation>
+      <user-evaluation
+        :reply="reply ? reply.slice(0, 2) : []"
+      ></user-evaluation>
     </div>
-    <div class="product-intro" id="title3">
-      <div class="title">产品介绍</div>
-      <div class="conter" v-html="fellowInfo.description"></div>
+    <div class="product-intro userEvaluation" id="title3">
+      <div class="title">陪诊员介绍</div>
+      <product-con-swiper :img-urls="fellow.slider_image"></product-con-swiper>
+      <div class="label">
+        <div>姓名: {{ fellow.username }}</div>
+        <div>性别: {{ getGender(fellow.gender) }}</div>
+        <div>年龄: {{ fellow.age }}</div>
+        <div>地址: {{ getAddressStr() }}</div>
+        <div>简介:</div>
+      </div>
+      <div class="conter" v-html="'  ' + fellow.description"></div>
     </div>
     <div style="height:1.2rem;"></div>
     <div class="footer acea-row row-between-wrapper">
-      <div class="item" @click="$router.push({ path: '/customer/list/' + id })">
-        <div class="iconfont icon-kefu"></div>
-        <div>客服</div>
-      </div>
-      <div class="item" @click="setCollect">
+      <div class="item" @click="setAttend">
         <div
           class="iconfont"
-          :class="fellowInfo.userCollect ? 'icon-shoucang1' : 'icon-shoucang'"
+          :class="fellow.userCollect ? 'icon-shoucang1' : 'icon-shoucang'"
         ></div>
-        <div>收藏</div>
+        <div>关注</div>
       </div>
-      <router-link
-        :to="'/cart'"
-        class="item animated"
-        :class="animated === true ? 'bounceIn' : ''"
-      >
-        <div class="iconfont icon-gouwuche1">
-          <span class="num bg-color-red" v-if="CartCount > 0">{{
-            CartCount
-          }}</span>
-        </div>
-        <div>购物车</div>
-      </router-link>
       <div class="bnt acea-row">
-        <div class="joinCart" @click="joinCart">加入购物车</div>
-        <div class="buy" @click="tapBuy" v-if="attr.productSelect.stock > 0">
-          立即购买
+        <div class="joinCart"></div>
+        <div class="buy" @click="submitOrder" v-if="fellow.status === 0">
+          下单
         </div>
-        <div class="buy bg-color-hui" v-else>已售罄</div>
+        <div class="buy bg-color-hui" v-else>陪诊员忙碌</div>
       </div>
-    </div>
-    <Product-window
-      v-on:changeFun="changeFun"
-      :attr="attr"
-      :iSplus="iSplus"
-    ></Product-window>
-    <StorePoster
-      v-on:setPosterImageStatus="setPosterImageStatus"
-      :posterImageStatus="posterImageStatus"
-      :posterData="posterData"
-    ></StorePoster>
-    <ShareInfo
-      v-on:setShareInfoStatus="setShareInfoStatus"
-      :shareInfoStatus="shareInfoStatus"
-    ></ShareInfo>
-    <div
-      class="mask"
-      @touchmove.prevent
-      @click="listenerActionClose"
-      v-show="posters"
-    ></div>
-    <div class="geoPage" v-if="mapShow">
-      <iframe
-        width="100%"
-        height="100%"
-        frameborder="0"
-        scrolling="no"
-        :src="
-          'https://apis.map.qq.com/uri/v1/geocoder?coord=' +
-            system_store.latitude +
-            ',' +
-            system_store.longitude +
-            '&referer=' +
-            mapKey
-        "
-      >
-      </iframe>
     </div>
   </div>
 </template>
@@ -128,87 +83,26 @@
 import "@assets/css/swiper.min.css";
 import ProductConSwiper from "@components/ProductConSwiper";
 import UserEvaluation from "@components/UserEvaluation";
-import ProductWindow from "@components/ProductWindow";
-import StorePoster from "@components/StorePoster";
-import ShareInfo from "@components/ShareInfo";
-import { goShopDetail } from "@libs/order";
 import debounce from "lodash.debounce";
-import {
-  getProductDetail,
-  postCartAdd,
-  getCartCount,
-  getProductCode
-} from "@api/store";
-import { getCollectAdd, getCollectDel, getUserInfo } from "@api/user";
-import { isWeixin } from "@utils/index";
-import { wechatEvevt } from "@libs/wechat";
-import { imageBase64 } from "@api/public";
+import { getCollectAdd, getCollectDel } from "@api/user";
 import { mapGetters } from "vuex";
+import { getFellowDetail } from "@api/store";
+
 let NAME = "GoodsCon";
 export default {
   name: NAME,
   components: {
     ProductConSwiper,
-    UserEvaluation,
-    ProductWindow,
-    StorePoster,
-    ShareInfo
+    UserEvaluation
   },
   data: function() {
     return {
-      iSplus: true,
-      shareInfoStatus: false,
-      weixinStatus: false,
-      mapShow: false,
-      mapKey: "",
-      posterData: {
-        image: "",
-        title: "",
-        price: "",
-        code: ""
-      },
-      posterImageStatus: false,
       animated: false,
-      coupon: {
-        coupon: false,
-        list: []
-      },
-      attr: {
-        cartAttr: false,
-        productAttr: [],
-        productSelect: {}
-      },
-      isOpen: false, //是否打开属性组件
-      productValue: [],
       id: 0,
-      fellowInfo: {},
-      couponList: [],
-      attrTxt: "请选择",
-      attrValue: "",
-      cart_num: 1, //购买数量
+      fellow: {},
       replyCount: "",
       replyChance: "",
       reply: [],
-      priceName: 0,
-      CartCount: 0,
-      posters: false,
-      banner: [{}, {}],
-      swiperRecommend: {
-        pagination: {
-          el: ".swiper-pagination",
-          clickable: true
-        },
-        autoplay: false,
-        loop: false,
-        speed: 1000,
-        observer: true,
-        observeParents: true
-      },
-      goodList: [],
-      system_store: {},
-      storeSelfMention: true,
-      storeItems: {},
-      activity: [],
       navList: [],
       lock: false,
       navActive: 0,
@@ -220,7 +114,7 @@ export default {
     $route(n) {
       if (n.name === NAME) {
         this.id = n.params.id;
-        this.fellowInfo.slider_image = [];
+        this.fellow.slider_image = [];
         this.productCon();
       }
     }
@@ -231,32 +125,26 @@ export default {
   mounted: function() {
     document.addEventListener("scroll", this.onScroll, false);
     this.id = this.$route.params.id;
-    this.fellowInfo.slider_image = [];
-    this.productCon();
+    this.fellow.slider_image = [];
+    this.fellowCon();
     window.addEventListener("scroll", this.handleScroll);
   },
   methods: {
+    getAddressStr() {
+      console.log(this.fellow);
+      let p = this.fellow.province;
+      let c = this.fellow.city;
+      let r = this.fellow.region;
+      let d = this.fellow.detailAddress;
+      let addressStr = p + (p ? "省" : "") + c + (c ? "市" : "") + r + "," + d;
+      console.log(addressStr);
+      return addressStr;
+    },
     getGender: g => {
       return g === 1 ? "男" : "女";
     },
     getStatus: s => {
       return s ? "忙碌" : "空闲";
-    },
-    // 商品详情跳转
-    goDetail(item) {
-      if (item.type === "1") {
-        this.$router.push({
-          path: "/activity/seckill_detail/" + item.id + "/" + item.time + "/1"
-        });
-      } else if (item.type === "2") {
-        this.$router.push({
-          path: "/activity/dargain_detail/" + item.id
-        });
-      } else {
-        this.$router.push({
-          path: "/activity/group_detail/" + item.id
-        });
-      }
     },
     handleScroll() {
       let top = document.body.scrollTop || document.documentElement.scrollTop;
@@ -308,304 +196,29 @@ export default {
         return initial;
       }, false);
     }, 500),
-    showChang: function() {
-      if (isWeixin()) {
-        let config = {
-          latitude: parseFloat(this.storeItems.latitude),
-          longitude: parseFloat(this.storeItems.longitude),
-          name: this.storeItems.name,
-          address: this.storeItems.address + this.system_store.detailed_address
-        };
-        wechatEvevt("openLocation", config)
-          .then(res => {
-            console.log(res);
-          })
-          .catch(res => {
-            if (res.is_ready) {
-              res.wx.openLocation(config);
-            }
-          });
-      } else {
-        if (!this.mapKey)
-          return this.$dialog.error(
-            "暂无法使用查看地图，请配置您的腾讯地图key"
-          );
-        this.mapShow = true;
-      }
-    },
     updateTitle() {
-      document.title = this.fellowInfo.store_name || this.$route.meta.title;
+      document.title = this.fellow.store_name || this.$route.meta.title;
     },
-    // 调转到门店列表
-    showStoreList() {
-      this.$store.commit("GET_TO", "details");
-      this.$router.push("/shop/storeList/details");
-    },
-    setOpenShare: function() {
-      var data = this.fellowInfo;
-      var href = location.href;
-      if (isWeixin()) {
-        if (this.isLogin) {
-          getUserInfo().then(res => {
-            href =
-              href.indexOf("?") === -1
-                ? href + "?spread=" + res.data.uid
-                : href + "&spread=" + res.data.uid;
-            var configAppMessage = {
-              desc: data.store_info,
-              title: data.store_name,
-              link: href,
-              imgUrl: data.image
-            };
-            wechatEvevt(
-              [
-                "updateAppMessageShareData",
-                "updateTimelineShareData",
-                "onMenuShareAppMessage",
-                "onMenuShareTimeline"
-              ],
-              configAppMessage
-            )
-              .then(res => {
-                console.log(res);
-              })
-              .catch(res => {
-                if (res.is_ready) {
-                  res.wx.updateAppMessageShareData(configAppMessage);
-                  res.wx.onMenuShareAppMessage(configAppMessage);
-                  res.wx.updateTimelineShareData(configAppMessage);
-                  res.wx.onMenuShareTimeline(configAppMessage);
-                }
-              });
-          });
-        } else {
-          var configAppMessage = {
-            desc: data.store_info,
-            title: data.store_name,
-            link: href,
-            imgUrl: data.image
-          };
-          wechatEvevt(
-            [
-              "updateAppMessageShareData",
-              "updateTimelineShareData",
-              "onMenuShareAppMessage",
-              "onMenuShareTimeline"
-            ],
-            configAppMessage
-          )
-            .then(res => {
-              console.log(res);
-            })
-            .catch(res => {
-              if (res.is_ready) {
-                res.wx.updateAppMessageShareData(configAppMessage);
-                res.wx.onMenuShareAppMessage(configAppMessage);
-                res.wx.updateTimelineShareData(configAppMessage);
-                res.wx.onMenuShareTimeline(configAppMessage);
-              }
-            });
-        }
-      }
-    },
-    setShareInfoStatus: function() {
-      this.shareInfoStatus = !this.shareInfoStatus;
-      this.posters = false;
-    },
-    shareCode: function(value) {
-      var that = this;
-      getProductCode(that.id).then(res => {
-        if (res.data.code) that.posterData.code = res.data.code;
-        value === false && that.listenerActionSheet();
-      });
-    },
-    setPosterImageStatus: function() {
-      var sTop = document.body || document.documentElement;
-      sTop.scrollTop = 0;
-      this.posterImageStatus = !this.posterImageStatus;
-      this.posters = false;
-    },
-    //产品详情接口；
-    productCon: function() {
+    fellowCon: function() {
       let that = this;
-      getProductDetail(that.id)
-        .then(res => {
-          that.$set(that, "fellowInfo", res.data.fellowInfo);
-          that.$set(that.attr, "productAttr", res.data.productAttr);
-          that.$set(that, "productValue", res.data.productValue);
-          that.$set(that, "replyCount", res.data.replyCount);
-          that.$set(that, "replyChance", res.data.replyChance);
-          that.reply = res.data.reply ? res.data.reply : [];
+      getFellowDetail(that.id)
+        .then(data => {
+          console.log(data);
+          that.$set(that, "fellow", data.fellow);
+          that.$set(that, "replyCount", data.replyCount);
+          that.$set(that, "replyChance", data.replyChance);
+          that.reply = data.reply ? data.reply : [];
           that.$set(that, "reply", that.reply);
-          that.$set(that, "priceName", res.data.priceName);
-          that.posterData.image = that.fellowInfo.image_base;
-          if (that.fellowInfo.store_name.length > 30) {
-            that.posterData.title =
-              that.fellowInfo.store_name.substring(0, 30) + "...";
-          } else {
-            that.posterData.title = that.fellowInfo.store_name;
-          }
-          that.storeSelfMention = res.data.store_self_mention ? true : false;
-          that.posterData.price = that.fellowInfo.price;
-          that.posterData.code = that.fellowInfo.code_base;
-          that.system_store = res.data.system_store;
-          let goodArray = [];
-          that.mapKey = res.data.mapKey;
-          let navList = ["商品", "评价", "详情"];
-          if (goodArray.length) {
-            navList.splice(2, 0, "推荐");
-          }
-          that.navList = navList;
-
+          that.navList = ["商品", "评价", "详情"];
           that.updateTitle();
-          that.DefaultSelect();
-          //that.getCartCount();
-          that.getImageBase64();
-          that.setOpenShare();
         })
         .catch(res => {
           that.$dialog.error(res.msg);
           that.$router.go(-1);
         });
     },
-    getImageBase64: function() {
-      let that = this;
-      imageBase64(this.posterData.image, that.posterData.code)
-        .then(res => {
-          that.posterData.image = res.data.image;
-          that.posterData.code = res.data.code;
-          that.isLogin && that.shareCode();
-        })
-        .catch(() => {
-          that.isLogin && that.shareCode();
-        });
-    },
-    //默认选中属性；
-    DefaultSelect: function() {
-      let productAttr = this.attr.productAttr,
-        value = [];
-      for (var key in this.productValue) {
-        if (this.productValue[key].stock > 0) {
-          value = this.attr.productAttr.length ? key.split(",") : [];
-          break;
-        }
-      }
-      for (let i = 0; i < productAttr.length; i++) {
-        this.$set(productAttr[i], "index", value[i]);
-      }
-      //sort();排序函数:数字-英文-汉字；
-      let productSelect = this.productValue[value.sort().join(",")];
-      if (productSelect && productAttr.length) {
-        this.$set(
-          this.attr.productSelect,
-          "store_name",
-          this.fellowInfo.store_name
-        );
-        this.$set(this.attr.productSelect, "image", productSelect.image);
-        this.$set(this.attr.productSelect, "price", productSelect.price);
-        this.$set(this.attr.productSelect, "stock", productSelect.stock);
-        this.$set(this.attr.productSelect, "unique", productSelect.unique);
-        this.$set(this.attr.productSelect, "cart_num", 1);
-        this.$set(this, "attrValue", value.sort().join(","));
-        this.$set(this, "attrTxt", "已选择");
-      } else if (!productSelect && productAttr.length) {
-        this.$set(
-          this.attr.productSelect,
-          "store_name",
-          this.fellowInfo.store_name
-        );
-        this.$set(this.attr.productSelect, "image", this.fellowInfo.image);
-        this.$set(this.attr.productSelect, "price", this.fellowInfo.price);
-        this.$set(this.attr.productSelect, "stock", 0);
-        this.$set(this.attr.productSelect, "unique", "");
-        this.$set(this.attr.productSelect, "cart_num", 0);
-        this.$set(this, "attrValue", "");
-        this.$set(this, "attrTxt", "请选择");
-      } else if (!productSelect && !productAttr.length) {
-        this.$set(
-          this.attr.productSelect,
-          "store_name",
-          this.fellowInfo.store_name
-        );
-        this.$set(this.attr.productSelect, "image", this.fellowInfo.image);
-        this.$set(this.attr.productSelect, "price", this.fellowInfo.price);
-        this.$set(this.attr.productSelect, "stock", this.fellowInfo.stock);
-        this.$set(
-          this.attr.productSelect,
-          "unique",
-          this.fellowInfo.unique || ""
-        );
-        this.$set(this.attr.productSelect, "cart_num", 1);
-        this.$set(this, "attrValue", "");
-        this.$set(this, "attrTxt", "请选择");
-      }
-    },
-    //购物车；
-    ChangeCartNum: function(changeValue) {
-      //changeValue:是否 加|减
-      //获取当前变动属性
-      let productSelect = this.productValue[this.attrValue];
-      //如果没有属性,赋值给商品默认库存
-      if (productSelect === undefined && !this.attr.productAttr.length)
-        productSelect = this.attr.productSelect;
-      //无属性值即库存为0；不存在加减；
-      if (productSelect === undefined) return;
-      let stock = productSelect.stock || 0;
-      let num = this.attr.productSelect;
-      if (changeValue) {
-        num.cart_num++;
-        if (num.cart_num > stock) {
-          this.$set(this.attr.productSelect, "cart_num", stock ? stock : 1);
-          this.$set(this, "cart_num", stock ? stock : 1);
-        }
-      } else {
-        num.cart_num--;
-        if (num.cart_num < 1) {
-          this.$set(this.attr.productSelect, "cart_num", 1);
-          this.$set(this, "cart_num", 1);
-        }
-      }
-    },
-    //将父级向子集多次传送的函数合二为一；
-    changeFun: function(opt) {
-      if (typeof opt !== "object") opt = {};
-      let action = opt.action || "";
-      let value = opt.value === undefined ? "" : opt.value;
-      this[action] && this[action](value);
-    },
-    //打开优惠券插件；
-    //打开属性插件；
-    selecAttrTap: function() {
-      this.attr.cartAttr = true;
-      this.isOpen = true;
-    },
-    changeattr: function(msg) {
-      this.attr.cartAttr = msg;
-      this.isOpen = false;
-    },
-    //选择属性；
-    ChangeAttr: function(res) {
-      let productSelect = this.productValue[res];
-      if (productSelect) {
-        this.$set(this.attr.productSelect, "image", productSelect.image);
-        this.$set(this.attr.productSelect, "price", productSelect.price);
-        this.$set(this.attr.productSelect, "stock", productSelect.stock);
-        this.$set(this.attr.productSelect, "unique", productSelect.unique);
-        this.$set(this.attr.productSelect, "cart_num", 1);
-        this.$set(this, "attrValue", res);
-        this.$set(this, "attrTxt", "已选择");
-      } else {
-        this.$set(this.attr.productSelect, "image", this.fellowInfo.image);
-        this.$set(this.attr.productSelect, "price", this.fellowInfo.price);
-        this.$set(this.attr.productSelect, "stock", 0);
-        this.$set(this.attr.productSelect, "unique", "");
-        this.$set(this.attr.productSelect, "cart_num", 0);
-        this.$set(this, "attrValue", "");
-        this.$set(this, "attrTxt", "请选择");
-      }
-    },
-    //收藏商品
-    setCollect: function() {
+    //todo: attend
+    setAttend: function() {
       let that = this,
         id = that.fellowInfo.id,
         category = "product";
@@ -619,103 +232,8 @@ export default {
         });
       }
     },
-    goGoods(item) {
-      goShopDetail(item).then(() => {
-        window.scroll(0, 0);
-        this.$router.push({ path: "/detail/" + item.id });
-      });
-    },
-    //  点击加入购物车按钮
-    joinCart: function() {
-      //0=加入购物车
-      this.goCat(0);
-    },
-    // 加入购物车；
-    goCat: function(news) {
-      let that = this,
-        productSelect = that.productValue[this.attrValue];
-      //打开属性
-      if (that.attrValue) {
-        //默认选中了属性，但是没有打开过属性弹窗还是自动打开让用户查看默认选中的属性
-        that.attr.cartAttr = !that.isOpen ? true : false;
-      } else {
-        if (that.isOpen) that.attr.cartAttr = true;
-        else that.attr.cartAttr = !that.attr.cartAttr;
-      }
-      //只有关闭属性弹窗时进行加入购物车
-      if (that.attr.cartAttr === true && that.isOpen === false)
-        return (that.isOpen = true);
-      if (
-        !this.attr.productSelect.cart_num ||
-        parseInt(this.attr.productSelect.cart_num) <= 0
-      )
-        return that.$dialog.toast({ mes: "请输入购买数量" });
-      //如果有属性,没有选择,提示用户选择
-      if (
-        that.attr.productAttr.length &&
-        productSelect === undefined &&
-        that.isOpen === true
-      )
-        return that.$dialog.toast({ mes: "产品库存不足，请选择其它" });
-      let q = {
-        productId: that.id,
-        cartNum: that.attr.productSelect.cart_num,
-        new: news,
-        uniqueId:
-          that.attr.productSelect !== undefined
-            ? that.attr.productSelect.unique
-            : ""
-      };
-      postCartAdd(q)
-        .then(function(res) {
-          that.isOpen = false;
-          that.attr.cartAttr = false;
-          if (news) {
-            that.$router.push({ path: "/order/submit/" + res.data.cartId });
-          } else {
-            that.$dialog.toast({
-              mes: "添加购物车成功",
-              callback: () => {
-                that.getCartCount(true);
-              }
-            });
-          }
-        })
-        .catch(res => {
-          that.isOpen = false;
-          return that.$dialog.toast({ mes: res.msg });
-        });
-    },
-    //获取购物车数量
-    getCartCount: function(isAnima) {
-      let that = this;
-      const isLogin = that.isLogin;
-      if (isLogin) {
-        getCartCount({ numType: 0 }).then(res => {
-          that.CartCount = res.data.count;
-          //加入购物车后重置属性
-          if (isAnima) {
-            that.animated = true;
-            setTimeout(function() {
-              that.animated = false;
-            }, 500);
-          }
-        });
-      }
-    },
-    //立即购买；
-    tapBuy: function() {
-      //  1=直接购买
-      this.goCat(1);
-    },
-    listenerActionSheet: function() {
-      if (isWeixin() === true) {
-        this.weixinStatus = true;
-      }
-      this.posters = true;
-    },
-    listenerActionClose: function() {
-      this.posters = false;
+    submitOrder: function() {
+      this.$router.push({ path: "/order/submit/" + this.fellow.id });
     }
   },
   beforeDestroy: function() {

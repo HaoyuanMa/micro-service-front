@@ -11,7 +11,8 @@
         </div>
       </div>
       <div class="time">
-        {{ item.createTime.slice(0, 10) }} 陪诊员： {{ item.fellowName }}
+        {{ item.createTime ? item.createTime.slice(0, 10) : "" }} 陪诊员：
+        {{ item.fellowName }}
       </div>
       <div class="evaluate-infor">{{ item.content }}</div>
     </div>
