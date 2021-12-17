@@ -7,7 +7,7 @@
       </keep-alive>
       <!--      </transition>-->
     </div>
-    <Footer></Footer>
+    <Footer v-if="footer === true"></Footer>
     <Home v-if="home === true"></Home>
   </div>
 </template>
