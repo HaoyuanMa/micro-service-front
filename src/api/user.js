@@ -45,7 +45,7 @@ export function registerReset(data) {
  * 个人中心
  * */
 export function getUser() {
-  return request.get("/user");
+  return request.get("/user/user/info");
 }
 
 /*
@@ -70,11 +70,14 @@ export function getMenuUser() {
   return request.get("/menu/user");
 }
 
+export function getDefaultAddress() {
+  return request.get("/user/useraddress/default", { login: true });
+}
 /*
  * 地址列表
  * */
-export function getAddressList(data) {
-  return request.get("/address/list", data || {});
+export function getAddressList() {
+  return request.get("/user/useraddress/list", { login: true });
 }
 
 /*
@@ -108,8 +111,9 @@ export function getAddress(id) {
 /*
  * 修改 添加地址
  * */
-export function postAddress(data) {
-  return request.post("/address/edit", data);
+export function postAddress(data, id) {
+  if (id) return request.post("update", { login: true });
+  else return request.post("user/useraddress/add", data);
 }
 
 /*

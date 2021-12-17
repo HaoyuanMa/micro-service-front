@@ -13,7 +13,8 @@ const defaultOpt = { login: true };
 function baseRequest(options) {
   const token = $store.state.app.token;
   const headers = options.headers || {};
-  headers["Authori-zation"] = "Bearer " + token;
+  //headers["Authorization"] = "Bearer " + token;
+  headers["Authorization"] = "1";
   options.headers = headers;
   if (options.login && !token) {
     toLogin();
