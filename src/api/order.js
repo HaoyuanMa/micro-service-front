@@ -48,7 +48,7 @@ export function getOrderList(data) {
  * @returns {*}
  */
 export function cancelOrder(id) {
-  return request.post("/order/cancel", { id });
+  return request.post("/order/order/delete", [id]);
 }
 
 /**
