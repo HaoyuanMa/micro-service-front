@@ -343,7 +343,6 @@ export default {
       this.active = index;
     },
     createOrder() {
-      //todo:
       if (!this.active) return this.$dialog.toast({ mes: "请选择支付方式" });
       if (!this.userAddress.id)
         return this.$dialog.toast({ mes: "请选择地址" });
@@ -368,7 +367,7 @@ export default {
           let url = "/order/status/" + data.orderId;
           this.$dialog.loading.close();
           this.$router.replace({
-            path: url
+            path: url + "/0"
           });
         })
         .catch(err => {

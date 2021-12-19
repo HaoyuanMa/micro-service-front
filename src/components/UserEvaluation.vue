@@ -11,7 +11,7 @@
         </div>
       </div>
       <div class="time">
-        {{ item.createTime ? item.createTime.slice(0, 10) : "" }} 陪诊员：
+        {{ item.createTime ? getOrderTimeStr(item.createTime) : "" }} 陪诊员：
         {{ item.fellowName }}
       </div>
       <div class="evaluate-infor">{{ item.content }}</div>
@@ -22,6 +22,7 @@
 <script>
 import Vue from "vue";
 import { ImagePreview } from "vant";
+import { getTimeStr } from "@libs/order";
 
 Vue.use(ImagePreview);
 export default {
@@ -35,6 +36,11 @@ export default {
   data: function() {
     return {};
   },
-  mounted: function() {}
+  mounted: function() {},
+  methods: {
+    getOrderTimeStr(t) {
+      return getTimeStr(t);
+    }
+  }
 };
 </script>
