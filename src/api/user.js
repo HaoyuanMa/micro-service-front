@@ -5,16 +5,7 @@ import request from "@utils/request";
  * @param data object 用户账号密码
  */
 export function login(data) {
-  //return request.post("/login", data, { login: false });
-  return new Promise(resolve => {
-    resolve({
-      test: data,
-      data: {
-        token: "token",
-        expires_time: new Date().getTime() + 1000 * 60 * 60 * 10
-      }
-    });
-  });
+  return request.post("user/user/login", data, { login: false });
 }
 
 /**

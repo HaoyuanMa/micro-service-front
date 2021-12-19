@@ -19,8 +19,12 @@ export function postOrderComputed(key, data) {
  * @param data
  * @returns {*}
  */
-export function createOrder(key, data) {
-  return request.post("/order/create/" + key, data || {});
+export function createOrder(data) {
+  return request.post("/order/order/add/", data, { login: true });
+}
+
+export function updateOrder(data) {
+  return request.post("/order/order/update/", data, { login: true });
 }
 
 /**
@@ -51,8 +55,8 @@ export function cancelOrder(id) {
  * 订单详情
  * @returns {*}
  */
-export function orderDetail(id) {
-  return request.get("/order/detail/" + id);
+export function getOrderDetail(id) {
+  return request.get("/order/order/info/" + id);
 }
 
 /**

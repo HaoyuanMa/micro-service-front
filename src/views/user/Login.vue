@@ -159,7 +159,7 @@ export default {
     };
   },
   mounted: function() {
-    this.getCode();
+    //this.getCode();
     this.getLogoImage();
   },
   methods: {
@@ -258,11 +258,9 @@ export default {
           that.$dialog.error(res.msg);
         });
     },
-    navTap: function(index) {
-      this.current = index;
-    },
+
     async submit() {
-      const { account, password, codeVal } = this;
+      const { account, password } = this;
       try {
         await this.$validator({
           account: [
@@ -274,29 +272,17 @@ export default {
             required(required.message("密码")),
             attrs.range([6, 16], attrs.range.message("密码")),
             alpha_num(alpha_num.message("密码"))
-          ],
-          codeVal: this.isShowCode
-            ? [
-                required(required.message("验证码")),
-                attrs.length(4, attrs.length.message("验证码")),
-                alpha_num(alpha_num.message("验证码"))
-              ]
-            : []
-        }).validate({ account, password, codeVal });
+          ]
+        }).validate({ account, password });
       } catch (e) {
         return validatorDefaultCatch(e);
       }
-
-      login({ account, password, code: codeVal })
-        .then(({ data }) => {
+      login({ account, password })
+        .then(data => {
           console.log(data);
-          //let expires_time = data.expires_time.substring(0, 19);
-          let expires_time = data.expires_time;
-          //expires_time = expires_time.replace(/-/g, "/");
-          expires_time = new Date(expires_time).getTime() - 28800000;
           const datas = {
             token: data.token,
-            expires_time: expires_time
+            expires_time: 0
           };
           this.$store.commit("LOGIN", datas);
           const backUrl = cookie.get(BACK_URL) || "/";

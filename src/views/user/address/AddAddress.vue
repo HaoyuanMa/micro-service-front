@@ -180,7 +180,7 @@ export default {
     //   });
     // },
     ChangeIsDefault: function() {
-      this.userAddress.defaultStatus = !this.userAddress.defaultStatus;
+      this.userAddress.defaultStatus = this.userAddress.defaultStatus ? 0 : 1;
     }
   }
 };

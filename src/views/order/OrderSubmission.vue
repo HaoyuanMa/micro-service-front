@@ -1,39 +1,20 @@
 <template>
   <div class="order-submission">
-    <div
-      class="allAddress"
-      :style="store_self_mention ? '' : 'padding-top: 0.2rem'"
-    >
-      <div class="nav acea-row">
-        <div
-          class="item font-color-red"
-          :class="shipping_type === 0 ? 'on' : 'on2'"
-          @click="addressType(0)"
-          v-if="store_self_mention"
-        ></div>
-        <div
-          class="item font-color-red"
-          :class="shipping_type === 1 ? 'on' : 'on2'"
-          @click="addressType(1)"
-          v-if="store_self_mention"
-        ></div>
-      </div>
-      <div
-        class="address acea-row row-between-wrapper"
-        v-if="shipping_type === 0"
-        @click="addressTap"
-      >
-        <div class="addressCon" v-if="addressInfo.real_name">
+    <!--地址-->
+    <div class="allAddress" style="padding-top: 0.2rem">
+      <div class="address acea-row row-between-wrapper" @click="addressTap">
+        <div class="addressCon" v-if="hasDefaultAddress">
           <div class="name">
-            {{ addressInfo.real_name }}
-            <span class="phone">{{ addressInfo.phone }}</span>
+            {{ userAddress.name }}
+            <span class="phone">{{ userAddress.phone }}</span>
           </div>
           <div>
-            <span class="default font-color-red" v-if="addressInfo.is_default"
+            <span
+              class="default font-color-red"
+              v-if="userAddress.defaultStatus"
               >[默认]</span
             >
-            {{ addressInfo.province }}{{ addressInfo.city
-            }}{{ addressInfo.district }}{{ addressInfo.detail }}
+            {{ getAddressStr() }}
           </div>
         </div>
         <div class="addressCon" v-else>
@@ -41,91 +22,39 @@
         </div>
         <div class="iconfont icon-jiantou"></div>
       </div>
-      <div
-        class="address acea-row row-between-wrapper"
-        v-else
-        @click="showStoreList"
-      >
-        <div class="addressCon">
-          <div class="name" v-if="storeItem">
-            {{ storeItem.name }}
-            <span class="phone" v-text="storeItem.phone"></span>
-          </div>
-          <div
-            v-text="storeItem.address + ',' + storeItem.detailed_address"
-            v-if="storeItem && storeItem.address && storeItem.detailed_address"
-          ></div>
-        </div>
-        <div class="iconfont icon-jiantou"></div>
-      </div>
       <div class="line">
         <img src="@assets/images/line.jpg" />
       </div>
     </div>
-    <OrderGoods :evaluate="0" :cartInfo="orderGroupInfo.cartInfo"></OrderGoods>
-    <div class="wrapper">
-      <div
-        class="item acea-row row-between-wrapper"
-        @click="couponTap"
-        v-if="deduction === false"
-      >
-        <div>优惠券</div>
-        <div class="discount">
-          {{ usableCoupon.coupon_title || "请选择" }}
-          <span class="iconfont icon-jiantou"></span>
-        </div>
-      </div>
-      <div class="item acea-row row-between-wrapper" v-if="deduction === false">
-        <div>积分抵扣</div>
-        <div class="discount">
-          <div class="select-btn">
-            <div class="checkbox-wrapper">
-              <label class="well-check">
-                <input type="checkbox" v-model="useIntegral" />
-                <i class="icon"></i>
-                <span class="integral">
-                  当前积分
-                  <span class="num font-color-red">
-                    {{ userInfo.integral || 0 }}
-                  </span>
-                </span>
-              </label>
-            </div>
+    <!--fellow信息-->
+    <div class="evaluateWtapper" style="padding-top: 0.2rem">
+      <div class="evaluateItem">
+        <div class="pic-text acea-row row-middle">
+          <div class="pictrue">
+            <img :src="fellow.header" class="image" />
+          </div>
+          <div class="acea-row row-middle">
+            <div class="name line1">{{ fellow.username }}</div>
           </div>
         </div>
-      </div>
-      <div
-        class="item acea-row row-between-wrapper"
-        v-if="
-          orderGroupInfo.priceGroup.vipPrice > 0 &&
-            userInfo.vip &&
-            pinkId == 0 &&
-            orderGroupInfo.bargain_id == 0 &&
-            orderGroupInfo.combination_id == 0 &&
-            orderGroupInfo.seckill_id == 0
-        "
-      >
-        会员优惠
-        <div class="discount">-￥{{ orderGroupInfo.priceGroup.vipPrice }}</div>
-      </div>
-      <div class="item acea-row row-between-wrapper" v-if="shipping_type === 0">
-        <div>快递费用</div>
-        <div class="discount">
-          {{
-            orderPrice.pay_postage > 0
-              ? "￥" + orderPrice.pay_postage
-              : "免运费"
-          }}
+        <div class="time">
+          {{ fellow.age }}岁
+          {{ getGender(fellow.gender) }}
         </div>
+        <div class="evaluate-infor">{{ fellow.sign }}</div>
       </div>
-      <div v-else>
+    </div>
+    <!--备注-->
+    <div class="wrapper">
+      <div>
         <div class="item acea-row row-between-wrapper">
           <div>联系人</div>
           <div class="discount">
             <input
               type="text"
               placeholder="请填写您的联系姓名"
-              v-model="contacts"
+              v-model="contactsName"
+              disabled="true"
             />
           </div>
         </div>
@@ -136,6 +65,7 @@
               type="text"
               placeholder="请填写您的联系电话"
               v-model="contactsTel"
+              disabled="true"
             />
           </div>
         </div>
@@ -144,14 +74,16 @@
         <div>备注信息</div>
         <textarea
           placeholder="请添加备注（150字以内）"
-          v-model="mark"
+          v-model="note"
         ></textarea>
       </div>
     </div>
+    <!--支付方式-->
     <div class="wrapper">
       <div class="item">
         <div>支付方式</div>
         <div class="list">
+          <!--微信支付(微信内)-->
           <div
             class="payItem acea-row row-middle"
             :class="active === 'weixin' ? 'on' : ''"
@@ -167,6 +99,7 @@
             </div>
             <div class="tip">微信快捷支付</div>
           </div>
+          <!--微信支付(非微信内)-->
           <div
             class="payItem acea-row row-middle"
             :class="active === 'weixin' ? 'on' : ''"
@@ -182,29 +115,11 @@
             </div>
             <div class="tip">微信快捷支付</div>
           </div>
-          <div
-            class="payItem acea-row row-middle"
-            :class="active === 'yue' ? 'on' : ''"
-            @click="payItem('yue')"
-          >
-            <div class="name acea-row row-center-wrapper">
-              <div
-                class="iconfont icon-icon-test"
-                :class="active === 'yue' ? 'bounceIn' : ''"
-              ></div>
-              余额支付
-            </div>
-            <div class="tip">可用余额：{{ userInfo.now_money || 0 }}</div>
-          </div>
+          <!--线下支付-->
           <div
             class="payItem acea-row row-middle"
             :class="active === 'offline' ? 'on' : ''"
             @click="payItem('offline')"
-            v-if="
-              offlinePayStatus === 1 &&
-                deduction === false &&
-                shipping_type === 0
-            "
           >
             <div class="name acea-row row-center-wrapper">
               <div
@@ -218,58 +133,19 @@
         </div>
       </div>
     </div>
-    <div class="moneyList">
-      <div
-        class="item acea-row row-between-wrapper"
-        v-if="orderPrice.total_price !== undefined"
-      >
-        <div>商品总价：</div>
-        <div class="money">￥{{ orderPrice.total_price }}</div>
-      </div>
-      <div
-        class="item acea-row row-between-wrapper"
-        v-if="orderPrice.pay_postage > 0"
-      >
-        <div>运费：</div>
-        <div class="money">+￥{{ orderPrice.pay_postage }}</div>
-      </div>
-      <div
-        class="item acea-row row-between-wrapper"
-        v-if="orderPrice.coupon_price > 0"
-      >
-        <div>优惠券抵扣：</div>
-        <div class="money">-￥{{ orderPrice.coupon_price }}</div>
-      </div>
-      <div
-        class="item acea-row row-between-wrapper"
-        v-if="orderPrice.deduction_price > 0"
-      >
-        <div>积分抵扣：</div>
-        <div class="money">-￥{{ orderPrice.deduction_price }}</div>
-      </div>
-    </div>
-
     <div style="height:1.2rem"></div>
     <div class="footer acea-row row-between-wrapper">
       <div>
         合计:
-        <span class="font-color-red">￥{{ orderPrice.pay_price }}</span>
+        <span class="font-color-red">￥{{ fellow.price }}</span>
       </div>
       <div class="settlement" @click="createOrder">立即结算</div>
     </div>
-    <CouponListWindow
-      v-on:couponchange="changecoupon($event)"
-      v-model="showCoupon"
-      :price="orderPrice.total_price"
-      :checked="usableCoupon.id"
-      :cartid="cartid"
-      @checked="changeCoupon"
-    ></CouponListWindow>
     <AddressWindow
       @checked="changeAddress"
       @redirect="addressRedirect"
       v-model="showAddress"
-      :checked="addressInfo.id"
+      :checked="userAddress.id"
       ref="mychild"
     ></AddressWindow>
   </div>
@@ -363,74 +239,40 @@
 }
 </style>
 <script>
-import OrderGoods from "@components/OrderGoods";
-import CouponListWindow from "@components/CouponListWindow";
 import AddressWindow from "@components/AddressWindow";
-import { postOrderConfirm, postOrderComputed, createOrder } from "@api/order";
-import { storeListApi } from "@api/store";
-import { getUser } from "@api/user";
-import { pay } from "@libs/wechat";
+import { createOrder } from "@api/order";
+import { getFellowDetail } from "@api/store";
+import { getDefaultAddress } from "@api/user";
 import { isWeixin } from "@utils";
 import { mapGetters } from "vuex";
-import cookie from "@utils/store/cookie";
+
 const NAME = "OrderSubmission",
   _isWeixin = isWeixin();
-const LONGITUDE = "user_longitude";
-const LATITUDE = "user_latitude";
 export default {
   name: NAME,
   components: {
-    OrderGoods,
-    CouponListWindow,
     AddressWindow
   },
   props: {},
   computed: {
-    ...mapGetters(["storeItems"]),
-    storeItem: function() {
-      if (JSON.stringify(this.storeItems) == "{}") {
-        return this.storeList;
-      } else {
-        return this.storeItems;
-      }
-    }
+    ...mapGetters(["storeItems"])
   },
   data: function() {
     return {
-      cartid: "",
-      offlinePayStatus: 2,
-      from: _isWeixin ? "weixin" : "weixinh5",
-      deduction: true,
-      isWeixin: _isWeixin,
-      pinkId: 0,
-      active: _isWeixin ? "weixin" : "yue",
-      showCoupon: false,
-      showAddress: false,
-      addressInfo: {},
-      couponId: 0,
-      orderGroupInfo: {
-        priceGroup: {}
-      },
-      usableCoupon: {},
-      addressLoaded: false,
-      useIntegral: false,
-      orderPrice: {
-        pay_price: "计算中"
-      },
-      mark: "",
-      system_store: {},
-      shipping_type: 0,
-      contacts: "",
+      fellowId: "",
+      fellow: {},
+      contactsName: "",
       contactsTel: "",
-      store_self_mention: 0,
-      userInfo: {},
-      storeList: {}
+      note: "",
+      hasDefaultAddress: false,
+      userAddress: {},
+      userAddressList: [],
+      active: "weixin",
+      isWeixin: _isWeixin,
+      showAddress: false
     };
   },
   watch: {
-    useIntegral() {
-      this.computedPrice();
-    },
     $route(n) {
       if (n.name === NAME) {
         console.log(this.$route.query.pinkid);
@@ -439,101 +281,47 @@ export default {
         else {
           this.pinkId = 0;
         }
-        this.getUserInfo();
-        this.getCartInfo();
+        this.getFellowInfo();
       }
-    },
-    shipping_type() {
-      this.computedPrice();
     }
   },
   mounted: function() {
     let that = this;
-    that.getUserInfo();
-    that.getCartInfo();
-    that.getList();
-    if (this.$route.query.pinkid !== undefined)
-      this.pinkId = this.$route.query.pinkid;
     if (that.$route.params.id !== undefined)
-      that.cartid = that.$route.params.id;
+      that.fellowId = that.$route.params.id;
+    that.getFellowInfo().then(() => {
+      that.getUserDefaultAddress();
+    });
   },
   methods: {
-    // 获取门店列表数据
-    getList: function() {
-      let data = {
-        latitude: cookie.get(LATITUDE) || "", //纬度
-        longitude: cookie.get(LONGITUDE) || "", //经度
-        page: 1,
-        limit: 10
-      };
-      storeListApi(data)
-        .then(res => {
-          this.storeList = res.data.list[0];
-        })
-        .catch(err => {
-          this.$dialog.error(err.msg);
-        });
+    getGender: g => {
+      return g === 1 ? "男" : " 女";
     },
-    // 跳转到门店列表
-    showStoreList() {
-      this.$store.commit("GET_TO", "orders");
-      this.$router.push("/shop/storeList/orders");
+    getAddressStr() {
+      let p = this.userAddress.province;
+      let c = this.userAddress.city;
+      let r = this.userAddress.region;
+      let d = this.userAddress.detailAddress;
+      return (p !== null ? p + "省" : "") + c + "市" + r + "," + d;
     },
-    getUserInfo() {
-      getUser()
-        .then(res => {
-          this.userInfo = res.data;
-        })
-        .catch(() => {});
-    },
-    addressType: function(index) {
-      if (index && !this.system_store.id)
-        return this.$dialog.error("暂无门店信息，您无法选择到店自提！");
-      this.shipping_type = index;
-    },
-    computedPrice() {
-      let shipping_type = this.shipping_type;
-      postOrderComputed(this.orderGroupInfo.orderKey, {
-        addressId: this.addressInfo.id,
-        useIntegral: this.useIntegral ? 1 : 0,
-        couponId: this.usableCoupon.id || 0,
-        shipping_type: parseInt(shipping_type) + 1,
-        payType: this.active
-      })
-        .then(res => {
-          const data = res.data;
-          if (data.status === "EXTEND_ORDER") {
-            this.$router.replace({
-              path: "/order/detail/" + data.result.orderId
-            });
-          } else {
-            this.orderPrice = data.result;
-          }
+    getFellowInfo() {
+      let that = this;
+      return getFellowDetail(that.fellowId)
+        .then(data => {
+          that.$set(that, "fellow", data.fellow);
         })
         .catch(res => {
-          this.$dialog.error(res.msg);
+          that.$dialog.error(res.msg);
+          that.$router.go(-1);
         });
     },
-    getCartInfo() {
-      const cartIds = this.$route.params.id;
-      if (!cartIds) {
-        this.$dialog.error("参数有误");
-        return this.$router.go(-1);
-      }
-      postOrderConfirm(cartIds)
-        .then(res => {
-          this.offlinePayStatus = res.data.offline_pay_status;
-          this.orderGroupInfo = res.data;
-          this.deduction = res.data.deduction;
-          this.usableCoupon = res.data.usableCoupon || {};
-          this.addressInfo = res.data.addressInfo || {};
-          this.system_store = res.data.system_store || {};
-          this.store_self_mention = res.data.store_self_mention;
-          this.computedPrice();
-        })
-        .catch(() => {
-          this.$dialog.error("加载订单数据失败");
-        });
+    getUserDefaultAddress() {
+      getDefaultAddress().then(res => {
+        this.userAddress = res.data;
+        if (this.userAddress) this.hasDefaultAddress = true;
+        this.contactsName = this.userAddress.name;
+        this.contactsTel = this.userAddress.phone;
+      });
     },
     addressTap: function() {
       this.showAddress = true;
@@ -542,99 +330,46 @@ export default {
         this.$refs.mychild.getAddressList();
       }
     },
+    changeAddress(addressInfo) {
+      this.userAddress = addressInfo;
+      this.contactsName = this.userAddress.name;
+      this.contactsTel = this.userAddress.phone;
+    },
     addressRedirect() {
       this.addressLoaded = false;
       this.showAddress = false;
     },
-    couponTap: function() {
-      this.showCoupon = true;
-    },
-    changeCoupon: function(coupon) {
-      if (!coupon) {
-        this.usableCoupon = { coupon_title: "不使用优惠券", id: 0 };
-      } else {
-        this.usableCoupon = coupon;
-      }
-      this.computedPrice();
-    },
     payItem: function(index) {
       this.active = index;
-      this.computedPrice();
-    },
-    changeAddress(addressInfo) {
-      this.addressInfo = addressInfo;
-      this.computedPrice();
     },
     createOrder() {
-      let shipping_type = this.shipping_type;
+      //todo:
       if (!this.active) return this.$dialog.toast({ mes: "请选择支付方式" });
-      if (!this.addressInfo.id && !this.shipping_type)
-        return this.$dialog.toast({ mes: "请选择收货地址" });
-      if (this.shipping_type) {
-        if (
-          (this.contacts === "" || this.contactsTel === "") &&
-          this.shipping_type
-        )
-          return this.$dialog.toast({ mes: "请填写联系人或联系人电话" });
-        if (!/^1(3|4|5|7|8|9|6)\d{9}$/.test(this.contactsTel)) {
-          return this.$dialog.toast({ mes: "请填写正确的手机号" });
-        }
-        if (!/^[\u4e00-\u9fa5\w]{2,16}$/.test(this.contacts)) {
-          return this.$dialog.toast({ mes: "请填写您的真实姓名" });
-        }
-      }
+      if (!this.userAddress.id)
+        return this.$dialog.toast({ mes: "请选择地址" });
       this.$dialog.loading.open("生成订单中");
-      createOrder(this.orderGroupInfo.orderKey, {
-        real_name: this.contacts,
-        phone: this.contactsTel,
-        addressId: this.addressInfo.id,
-        useIntegral: this.useIntegral ? 1 : 0,
-        couponId: this.usableCoupon.id || 0,
-        payType: this.active,
-        pinkId: this.pinkId,
-        seckill_id: this.orderGroupInfo.seckill_id,
-        combinationId: this.orderGroupInfo.combination_id,
-        bargainId: this.orderGroupInfo.bargain_id,
-        from: this.from,
-        mark: this.mark || "",
-        shipping_type: parseInt(shipping_type) + 1,
-        store_id: this.storeItem ? this.storeItem.id : 0
+      let address = this.userAddress;
+      createOrder({
+        fellowId: this.fellowId,
+        totalAmount: this.fellow.price,
+        payType: this.active === "weixin" ? 0 : 1,
+        sourceType: _isWeixin ? 0 : 1,
+        status: 0,
+        name: address.name,
+        userPhone: address.phone,
+        userProvince: address.province,
+        userCity: address.city,
+        userRegion: address.region,
+        userDetailAddress: address.detailAddress,
+        note: this.note
       })
-        .then(res => {
+        .then(data => {
+          console.log(data);
+          let url = "/order/status/" + data.orderId;
           this.$dialog.loading.close();
-          const data = res.data;
-          let url = "/order/status/" + data.result.orderId;
-          switch (data.status) {
-            case "ORDER_EXIST":
-            case "EXTEND_ORDER":
-            case "PAY_DEFICIENCY":
-            case "PAY_ERROR":
-              this.$dialog.toast({ mes: res.msg });
-              this.$router.replace({
-                path: url + "/0?msg=" + res.msg
-              });
-              break;
-            case "SUCCESS":
-              this.$dialog.success(res.msg);
-              this.$router.replace({
-                path: url + "/1"
-              });
-              break;
-            case "WECHAT_H5_PAY":
-              this.$router.replace({
-                path: url + "/2"
-              });
-              setTimeout(() => {
-                location.href = data.result.jsConfig.mweb_url;
-              }, 100);
-              break;
-            case "WECHAT_PAY":
-              pay(data.result.jsConfig).finally(() => {
-                this.$router.replace({
-                  path: url + "/4"
-                });
-              });
-          }
+          this.$router.replace({
+            path: url
+          });
         })
         .catch(err => {
           this.$dialog.error(err.msg || "创建订单失败");
