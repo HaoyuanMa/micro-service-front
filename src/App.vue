@@ -8,7 +8,7 @@
       <!--      </transition>-->
     </div>
     <Footer v-if="footer === true"></Footer>
-    <Home v-if="home === true"></Home>
+    <Home v-if="home === false"></Home>
   </div>
 </template>
 <script>
