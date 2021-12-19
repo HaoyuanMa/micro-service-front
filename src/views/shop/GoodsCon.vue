@@ -155,7 +155,7 @@ export default {
       this.$nextTick(() => {
         let index = a;
         this.navActive = index;
-        if (!this.goodList.length && index === 2) {
+        if (index === 2) {
           index = 3;
         }
         let element = document.querySelector("#title" + index);
