@@ -33,6 +33,12 @@
         <img src="@assets/images/up.png" v-if="age === 1" />
         <img src="@assets/images/down.png" v-if="age === 2" />
       </div>
+      <div class="item" @click="set_where(3)">
+        性别
+        <img src="@assets/images/horn.png" v-if="gender === 0" />
+        <img src="@assets/images/up.png" v-if="gender === 1" />
+        <img src="@assets/images/down.png" v-if="gender === 2" />
+      </div>
       <!-- down -->
     </div>
     <div
@@ -64,12 +70,8 @@
           </div>
         </div>
       </div>
-      <div class="item">
-        <div class="pictrue"></div>
-        <div class="pictrue"></div>
-      </div>
-      <div style="height:1.2rem;"></div>
     </div>
+    <div style="height:1.2rem;"></div>
     <Loading :loaded="loadend" :loading="loading"></Loading>
     <div
       class="noCommodity"
@@ -117,7 +119,8 @@ export default {
       loadend: false,
       price: 0,
       age: 0,
-      name: 0
+      name: 0,
+      gender: 0
     };
   },
   watch: {
@@ -187,18 +190,28 @@ export default {
         case 0:
           that.price = 0;
           that.age = 0;
+          that.gender = 0;
           break;
         case 1:
           if (that.price === 0) that.price = 1;
           else if (that.price === 1) that.price = 2;
           else if (that.price === 2) that.price = 0;
           that.age = 0;
+          this.gender = 0;
           break;
         case 2:
           if (that.age === 0) that.age = 1;
           else if (that.age === 1) that.age = 2;
           else if (that.age === 2) that.age = 0;
           that.price = 0;
+          that.gender = 0;
+          break;
+        case 3:
+          if (that.gender === 0) that.gender = 1;
+          else if (that.gender === 1) that.gender = 2;
+          else if (that.gender === 2) that.gender = 0;
+          that.price = 0;
+          that.age = 0;
           break;
         default:
           break;
@@ -227,6 +240,13 @@ export default {
       } else if (that.age === 2) {
         that.where.order = "desc";
         that.where.sidx = "age";
+      }
+      if (that.gender === 1) {
+        that.where.order = "asc";
+        that.where.sidx = "gender";
+      } else if (that.gender === 2) {
+        that.where.order = "desc";
+        that.where.sidx = "gender";
       }
     },
     switchTap: function() {
