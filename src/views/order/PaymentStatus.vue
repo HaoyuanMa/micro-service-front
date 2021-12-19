@@ -13,7 +13,10 @@
       </div>
       <div class="item acea-row row-between-wrapper">
         <div>下单时间</div>
-        <div class="itemCom" v-text="orderInfo.createTime"></div>
+        <div
+          class="itemCom"
+          v-text="getOrderTimeStr(orderInfo.createTime)"
+        ></div>
       </div>
       <div class="item acea-row row-between-wrapper">
         <div>支付方式</div>
@@ -39,6 +42,7 @@
 import { mapGetters } from "vuex";
 import { getOrderDetail, updateOrder } from "@api/order";
 import { isWeixin } from "@utils";
+import { getTimeStr } from "@libs/order";
 
 const NAME = "PayMentStatus";
 
@@ -48,18 +52,16 @@ export default {
   data: function() {
     return {
       id: "",
-      status: 0,
-      msgContent: "",
+      toPay: 0,
       orderInfo: {},
       isWeixin: isWeixin()
     };
   },
   watch: {
     $route(n) {
-      if (n.query.msg) this.msgContent = n.query.msg;
       if (n.name === NAME && this.id !== n.params.id) {
         this.id = n.params.id;
-        this.status = parseInt(n.params.status);
+        this.toPay = parseInt(n.params.toPay);
         this.getOrderInfo();
       }
     }
@@ -69,21 +71,27 @@ export default {
   },
   mounted() {
     this.id = this.$route.params.id;
-    this.msgContent = this.$route.query.msg;
-    this.status = parseInt(this.$route.params.status);
+    this.toPay = parseInt(this.$route.params.toPay);
     this.getOrderInfo(this.id).then(() => {
-      if (this.orderInfo.payType === 0 && this.orderInfo.status === 0) {
+      if (
+        this.toPay === 1 ||
+        (this.orderInfo.payType === 0 && this.orderInfo.status === 0)
+      ) {
         this.$dialog.loading.open("支付中");
         this.orderInfo.status = 1;
         updateOrder(this.orderInfo).then(() => {
           this.sleep(() => {
             this.$dialog.loading.close();
+            this.$dialog.toast({ mes: " 支付成功" });
           }, 3000);
         });
       }
     });
   },
   methods: {
+    getOrderTimeStr(t) {
+      return getTimeStr(t);
+    },
     sleep: function(fun, time) {
       setTimeout(() => {
         fun();
@@ -92,7 +100,7 @@ export default {
     goPages(route) {
       let routes =
         route !== undefined ? route : "/order/detail/" + this.orderInfo.id;
-      return this.$router.push({
+      return this.$router.replace({
         path: routes
       });
     },
