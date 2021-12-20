@@ -48,7 +48,11 @@ export function getOrderList(data) {
  * @returns {*}
  */
 export function cancelOrder(id) {
-  return request.post("/order/order/delete", [id]);
+  return request.post("/order/order/delete", [id], { login: true });
+}
+
+export function finishAcc(id) {
+  return request.post("/order/order/finishAcc/" + id, { login: true });
 }
 
 /**
