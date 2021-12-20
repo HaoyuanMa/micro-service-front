@@ -320,7 +320,6 @@
 <script>
 import { getOrderDetail } from "@api/order";
 import ClipboardJS from "clipboard";
-import { isWeixin } from "@utils";
 import { mapGetters } from "vuex";
 import { cancelOrderHandle, finishAccHandle, getTimeStr } from "@libs/order";
 import GeneralWindow from "@components/GeneralWindow";
@@ -343,19 +342,7 @@ export default {
       generalContent: {
         promoterNum: "",
         title: ""
-      },
-
-      offlinePayStatus: 2,
-      orderTypeName: "普通订单",
-      orderTypeNameStatus: true,
-      offlineStatus: true,
-      status: {},
-      pay: false,
-      payType: ["yue", "weixin"],
-      from: isWeixin() ? "weixin" : "weixinh5",
-      system_store: {},
-      mapKay: "",
-      mapShow: false
+      }
     };
   },
   computed: {
