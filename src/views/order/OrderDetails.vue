@@ -170,7 +170,7 @@
         </div>
       </template>
       <template v-if="orderInfo.status === 2">
-        <div class="bnt bg-color-red" @click="toEvaluate()">
+        <div class="bnt bg-color-red" @click="toEvaluate(orderInfo.id)">
           去评价
         </div>
       </template>
@@ -496,8 +496,8 @@ export default {
       this.generalActive = msg;
       this.getDetail();
     },
-    toEvaluate() {
-      //todo:
+    toEvaluate(id) {
+      this.$router.push({ path: "/goods_evaluate/" + id });
     },
     goFellowDetail(id) {
       this.$router.push({ path: "/detail/" + id });
