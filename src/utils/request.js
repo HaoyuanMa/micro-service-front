@@ -26,7 +26,10 @@ function baseRequest(options) {
     if (res.status !== 200)
       return Promise.reject({ msg: "请求失败", res, data });
 
-    if ([410000, 410001, 410002].indexOf(data.code) !== -1) {
+    if (
+      [410000, 410001, 410002].indexOf(data.code) !== -1 ||
+      data.code === 401
+    ) {
       toLogin();
       return Promise.reject({ msg: res.data.msg, res, data, toLogin: true });
     } else if (data.code === 0) {
