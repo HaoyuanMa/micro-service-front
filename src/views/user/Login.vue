@@ -74,22 +74,9 @@
         <div class="item">
           <div class="align-left">
             <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-code_1"></use>
+              <use xlink:href="#icon-yonghu-xianxing"></use>
             </svg>
-            <input
-              type="text"
-              placeholder="填写验证码"
-              class="codeIput"
-              v-model="captcha"
-            />
-            <button
-              class="code"
-              :disabled="disabled"
-              :class="disabled === true ? 'on' : ''"
-              @click="code"
-            >
-              {{ text }}
-            </button>
+            <input type="text" placeholder="填写用户名" v-model="username" />
           </div>
         </div>
         <div class="item">
@@ -104,20 +91,6 @@
             />
           </div>
         </div>
-        <div class="item" v-if="isShowCode">
-          <div class="align-left">
-            <svg class="icon" aria-hidden="true">
-              <use xlink:href="#icon-code_"></use>
-            </svg>
-            <input
-              type="text"
-              placeholder="填写验证码"
-              class="codeIput"
-              v-model="codeVal"
-            />
-            <div class="code" @click="again"><img :src="codeUrl" /></div>
-          </div>
-        </div>
       </div>
       <div class="logon" @click="register">注册</div>
       <div class="tip">
@@ -129,33 +102,25 @@
   </div>
 </template>
 <script>
-import sendVerifyCode from "@mixins/SendVerifyCode";
-import { login, registerVerify, register, getCodeApi } from "@api/user";
+import { login, register } from "@api/user";
 import attrs, { required, alpha_num, chs_phone } from "@utils/validate";
 import { validatorDefaultCatch } from "@utils/dialog";
-import { getLogo } from "@api/public";
 import cookie from "@utils/store/cookie";
-import { VUE_APP_API_URL } from "@utils";
 
 const BACK_URL = "login_back_url";
 
 export default {
   name: "Login",
-  mixins: [sendVerifyCode],
   data: function() {
     return {
+      username: "",
       navList: ["账号登录"],
       current: 0,
       account: "",
       password: "",
-      captcha: "",
       formItem: 1,
       type: "login",
-      logoUrl: "",
-      keyCode: "",
-      codeUrl: "",
-      codeVal: "",
-      isShowCode: false
+      logoUrl: ""
     };
   },
   mounted: function() {
@@ -163,32 +128,9 @@ export default {
     this.getLogoImage();
   },
   methods: {
-    again() {
-      this.codeUrl =
-        VUE_APP_API_URL +
-        "/sms_captcha?" +
-        "key=" +
-        this.keyCode +
-        Date.parse(new Date());
-    },
-    getCode() {
-      getCodeApi()
-        .then(res => {
-          this.keyCode = res.data.key;
-        })
-        .catch(res => {
-          this.$dialog.error(res.msg);
-        });
-    },
-    async getLogoImage() {
-      let that = this;
-      getLogo(2).then(res => {
-        that.logoUrl = res.data.logo_url;
-      });
-    },
     async register() {
-      var that = this;
-      const { account, captcha, password } = that;
+      let that = this;
+      const { account, username, password } = that;
       try {
         await that
           .$validator({
@@ -196,9 +138,9 @@ export default {
               required(required.message("手机号码")),
               chs_phone(chs_phone.message())
             ],
-            captcha: [
-              required(required.message("验证码")),
-              alpha_num(alpha_num.message("验证码"))
+            username: [
+              required(required.message("用户名")),
+              alpha_num(alpha_num.message("用户名"))
             ],
             password: [
               required(required.message("密码")),
@@ -206,15 +148,14 @@ export default {
               alpha_num(alpha_num.message("密码"))
             ]
           })
-          .validate({ account, captcha, password });
+          .validate({ account, username, password });
       } catch (e) {
         return validatorDefaultCatch(e);
       }
       register({
-        account: that.account,
-        captcha: that.captcha,
-        password: that.password,
-        spread: cookie.get("spread")
+        mobile: that.account,
+        username: that.username,
+        password: that.password
       })
         .then(res => {
           that.$dialog.success(res.msg);
@@ -224,41 +165,6 @@ export default {
           that.$dialog.error(res.msg);
         });
     },
-    async code() {
-      var that = this;
-      const { account } = that;
-      try {
-        await that
-          .$validator({
-            account: [
-              required(required.message("手机号码")),
-              chs_phone(chs_phone.message())
-            ]
-          })
-          .validate({ account });
-      } catch (e) {
-        return validatorDefaultCatch(e);
-      }
-      if (that.formItem == 2) that.type = "register";
-      await registerVerify({
-        phone: that.account,
-        type: that.type,
-        key: that.keyCode,
-        code: that.codeVal
-      })
-        .then(res => {
-          that.$dialog.success(res.msg);
-          that.sendCode();
-        })
-        .catch(res => {
-          if (res.data.status === 402) {
-            that.codeUrl = `${VUE_APP_API_URL}/sms_captcha?key=${that.keyCode}`;
-            that.isShowCode = true;
-          }
-          that.$dialog.error(res.msg);
-        });
-    },
-
     async submit() {
       const { account, password } = this;
       try {
