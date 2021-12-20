@@ -1,21 +1,15 @@
 <template>
   <div class="user">
+    <!--header-->
     <div class="header bg-color-red acea-row row-between-wrapper">
       <div class="picTxt acea-row row-between-wrapper">
-        <div class="pictrue"><img :src="userInfo.avatar" /></div>
+        <div class="pictrue"><img :src="userInfo.header" /></div>
         <div class="text">
           <div class="acea-row row-middle">
-            <div class="name line1">{{ userInfo.nickname }}</div>
-            <div class="member acea-row row-middle" v-if="userInfo.vip">
-              <img :src="userInfo.vip_icon" />{{ userInfo.vip_name }}
-            </div>
+            <div class="name line1">{{ userInfo.username }}</div>
           </div>
-          <router-link :to="'/user/data'" class="id" v-if="userInfo.phone">
-            ID：{{ userInfo.uid || 0
-            }}<span class="iconfont icon-bianji1"></span>
-          </router-link>
-          <router-link :to="'/user/binding'" class="binding" v-else>
-            <span>绑定手机号</span>
+          <router-link :to="'/user/data'" class="id">
+            mobile：{{ userInfo.mobile }}
           </router-link>
         </div>
       </div>
@@ -25,35 +19,6 @@
       ></span>
     </div>
     <div class="wrapper">
-      <div class="nav acea-row row-middle">
-        <router-link :to="{ path: '/user/account' }" class="item">
-          <div>我的余额</div>
-          <div class="num">{{ userInfo.now_money || 0 }}</div>
-        </router-link>
-        <!--<router-link-->
-        <!--:to="'/user/user_promotion'"-->
-        <!--class="item"-->
-        <!--v-if="userInfo.is_promoter === 1 || userInfo.statu === 2"-->
-        <!--&gt;-->
-        <div
-          @click="goPagey('/user/user_promotion')"
-          class="item"
-          v-if="userInfo.is_promoter === 1 || userInfo.statu === 2"
-        >
-          <div>当前佣金</div>
-          <div class="num">{{ userInfo.brokerage_price || 0 }}</div>
-        </div>
-
-        <!--</router-link>-->
-        <router-link :to="'/user/integral'" class="item" v-else>
-          <div>当前积分</div>
-          <div class="num">{{ userInfo.integral || 0 }}</div>
-        </router-link>
-        <router-link :to="'/user/user_coupon'" class="item">
-          <div>优惠券</div>
-          <div class="num">{{ userInfo.couponCount || 0 }}</div>
-        </router-link>
-      </div>
       <div class="myOrder">
         <div class="title acea-row row-between-wrapper">
           <div>我的订单</div>
@@ -61,190 +26,154 @@
             全部订单<span class="iconfont icon-jiantou"></span>
           </router-link>
         </div>
+        <!--订单分类Nav-->
         <div class="orderState acea-row row-middle">
           <router-link :to="{ path: '/order/list/' + 0 }" class="item">
             <div class="pictrue">
               <img src="@assets/images/dfk.png" />
-              <span
-                class="order-status-num"
-                v-if="orderStatusNum.unpaid_count > 0"
-                >{{ orderStatusNum.unpaid_count }}</span
-              >
+              <span class="order-status-num" v-if="orderStats.unpaid > 0">{{
+                orderStats.unpaid
+              }}</span>
             </div>
             <div>待付款</div>
           </router-link>
           <router-link :to="{ path: '/order/list/' + 1 }" class="item">
             <div class="pictrue">
               <img src="@assets/images/dfh.png" />
-              <span
-                class="order-status-num"
-                v-if="orderStatusNum.unshipped_count > 0"
-                >{{ orderStatusNum.unshipped_count }}</span
-              >
+              <span class="order-status-num" v-if="orderStats.unpaid > 0">{{
+                orderStats.paid
+              }}</span>
             </div>
-            <div>待发货</div>
+            <div>待完成</div>
           </router-link>
           <router-link :to="{ path: '/order/list/' + 2 }" class="item">
-            <div class="pictrue">
-              <img src="@assets/images/dsh.png" />
-              <span
-                class="order-status-num"
-                v-if="orderStatusNum.received_count > 0"
-                >{{ orderStatusNum.received_count }}</span
-              >
-            </div>
-            <div>待收货</div>
-          </router-link>
-          <router-link :to="{ path: '/order/list/' + 3 }" class="item">
             <div class="pictrue">
               <img src="@assets/images/dpj.png" />
               <span
                 class="order-status-num"
-                v-if="orderStatusNum.evaluated_count > 0"
-                >{{ orderStatusNum.evaluated_count }}</span
+                v-if="orderStats.waitToComment > 0"
+                >{{ orderStats.waitToComment }}</span
               >
             </div>
             <div>待评价</div>
           </router-link>
-          <router-link :to="'/order/refund_list'" class="item">
-            <div class="pictrue">
-              <img src="@assets/images/sh.png" />
-              <span
-                class="order-status-num"
-                v-if="orderStatusNum.refund_count > 0"
-                >{{ orderStatusNum.refund_count }}</span
-              >
-            </div>
-            <div>售后/退款</div>
-          </router-link>
         </div>
       </div>
-      <div class="myService">
-        <div class="title acea-row row-middle">我的服务</div>
-        <div class="serviceList acea-row row-middle">
-          <template v-for="(item, index) in MyMenus">
-            <div
-              class="item"
-              :key="index"
-              @click="goPages(index)"
-              v-if="item.wap_url"
-            >
-              <div class="pictrue">
-                <img :src="item.pic" />
+      <div class="myService order-submission">
+        <div class="title acea-row row-middle">我的地址</div>
+        <div class="allAddress" style="padding-top: 0.2rem">
+          <div class="address acea-row row-between-wrapper" @click="addressTap">
+            <div class="addressCon" v-if="hasDefaultAddress">
+              <div class="name">
+                {{ userAddress.name }}
+                <span class="phone">{{ userAddress.phone }}</span>
               </div>
-              <div>{{ item.name }}</div>
+              <div>
+                <span class="default font-color-red">[默认]</span>
+                {{ getAddressStr() }}
+              </div>
             </div>
-          </template>
-          <!--<div-->
-          <!--class="item"-->
-          <!--@click="changeswitch(true)"-->
-          <!--v-if="userInfo.phone && isWeixin"-->
-          <!--&gt;-->
-          <!--<div class="pictrue"><img src="@assets/images/switch.png" /></div>-->
-          <!--<div>账号切换</div>-->
-          <!--</div>-->
+            <div class="addressCon" v-else>
+              <div class="setaddress">设置收货地址</div>
+            </div>
+            <div class="iconfont icon-jiantou"></div>
+          </div>
+          <div class="line">
+            <img src="@assets/images/line.jpg" />
+          </div>
         </div>
       </div>
     </div>
-    <img src="@assets/images/support.png" class="support" />
     <div class="footer-line-height"></div>
-    <SwitchWindow
-      v-on:changeswitch="changeswitch"
-      :switchActive="switchActive"
-      :login_type="userInfo.login_type"
-    ></SwitchWindow>
-    <GeneralWindow
-      :generalActive="generalActive"
-      @closeGeneralWindow="closeGeneralWindow"
-      :generalContent="generalContent"
-    ></GeneralWindow>
+    <AddressWindow
+      @checked="changeAddress"
+      @redirect="addressRedirect"
+      v-model="showAddress"
+      :checked="userAddress.id"
+      :to-default="true"
+      ref="mychild"
+    ></AddressWindow>
   </div>
 </template>
 
 <script>
-import { getUser, getMenuUser } from "@api/user";
+import { getUser, getDefaultAddress } from "@api/user";
 import { isWeixin } from "@utils";
-import SwitchWindow from "@components/SwitchWindow";
-import GeneralWindow from "@components/GeneralWindow";
+import { getOrderStats } from "@api/order";
+import AddressWindow from "@components/AddressWindow";
 const NAME = "User";
 
 export default {
   name: NAME,
-  components: {
-    SwitchWindow,
-    GeneralWindow
-  },
   props: {},
+  components: {
+    AddressWindow
+  },
   data: function() {
     return {
-      userInfo: {},
-      MyMenus: [],
-      orderStatusNum: {},
-      switchActive: false,
+      hasDefaultAddress: false,
+      userAddress: {},
+      addressLoaded: false,
+      showAddress: false,
       isWeixin: false,
-      generalActive: false,
-      generalContent: {
-        promoterNum: "",
-        title: ""
+      userInfo: {},
+      orderStats: {
+        unpaid: 0,
+        paid: 0,
+        waitToComment: 0,
+        finished: 0
       }
     };
   },
   watch: {
     $route(n) {
-      if (n.name === NAME) this.User();
+      if (n.name === NAME) this.getUserInfo();
     }
   },
   mounted: function() {
-    this.User();
-    this.MenuUser();
+    this.getUserInfo();
     this.isWeixin = isWeixin();
   },
   methods: {
-    changeswitch: function(data) {
-      this.switchActive = data;
+    getAddressStr() {
+      let p = this.userAddress.province;
+      let c = this.userAddress.city;
+      let r = this.userAddress.region;
+      let d = this.userAddress.detailAddress;
+      return (p !== null ? p + "省" : "") + c + "市" + r + "," + d;
     },
-    User: function() {
+    getUserInfo: function() {
       let that = this;
       getUser().then(res => {
-        that.userInfo = res.data;
-        that.orderStatusNum = res.data.orderStatusNum;
-        this.generalContent = {
-          promoterNum: `您在商城累计消费金额仅差 <span style="color: #ff8500;">${res
-            .data.promoter_price || 0}元</span>即可开通推广权限`,
-          title: "您未获得推广权限"
-        };
+        that.userInfo = res.user;
+        getOrderStats().then(res => {
+          let os = that.orderStats;
+          os.unpaid = res.unpaid;
+          os.paid = res.paid;
+          os.waitToComment = res.waitToComment;
+          os.finished = res.finished;
+          getDefaultAddress().then(res => {
+            that.userAddress = res.data;
+            if (that.userAddress) that.hasDefaultAddress = true;
+            that.contactsName = that.userAddress.name;
+            that.contactsTel = that.userAddress.phone;
+          });
+        });
       });
     },
-    MenuUser: function() {
-      let that = this;
-      getMenuUser().then(res => {
-        that.MyMenus = res.data.routine_my_menus;
-      });
+    changeAddress(addressInfo) {
+      this.userAddress = addressInfo;
     },
-    goPagey(url) {
-      if (!this.userInfo.is_promoter && this.userInfo.statu == 1)
-        return this.$dialog.toast({ mes: "您还没有推广权限！！" });
-      if (!this.userInfo.is_promoter && this.userInfo.statu == 2) {
-        return (this.generalActive = true);
-      }
-      this.$router.push({ path: url });
+    addressRedirect() {
+      this.addressLoaded = false;
+      this.showAddress = false;
     },
-    goPages: function(index) {
-      let url = this.MyMenus[index].wap_url;
-      if (url === "/user/user_promotion") {
-        if (!this.userInfo.is_promoter && this.userInfo.statu == 1)
-          return this.$dialog.toast({ mes: "您还没有推广权限！！" });
-        if (!this.userInfo.is_promoter && this.userInfo.statu == 2) {
-          return (this.generalActive = true);
-        }
+    addressTap: function() {
+      this.showAddress = true;
+      if (!this.addressLoaded) {
+        this.addressLoaded = true;
+        this.$refs.mychild.getAddressList();
       }
-      if (url === "/customer/index" && !this.userInfo.adminid) {
-        return this.$dialog.toast({ mes: "您还不是客服！！" });
-      }
-      this.$router.push({ path: this.MyMenus[index].wap_url });
-    },
-    closeGeneralWindow(msg) {
-      this.generalActive = msg;
     }
   }
 };
