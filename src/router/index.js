@@ -26,16 +26,6 @@ const router = new Router({
       component: Index
     },
     {
-      path: "/customer/chat/:id/:productId?",
-      name: "CustomerService",
-      meta: {
-        title: "客服聊天",
-        keepAlive: false,
-        auth: true
-      },
-      component: () => import("@views/user/CustomerService.vue")
-    },
-    {
       path: "/collection",
       name: "GoodsCollection",
       meta: {
@@ -76,15 +66,6 @@ const router = new Router({
       component: () => import("@views/shop/GoodsEvaluate.vue")
     },
     {
-      path: "/hot_new_goods/:type",
-      name: "HotNewGoods",
-      meta: {
-        title: "热门榜单",
-        keepAlive: false
-      },
-      component: () => import("@views/shop/HotNewGoods.vue")
-    },
-    {
       path: "/detail/:id",
       name: "GoodsCon",
       meta: {
@@ -92,15 +73,6 @@ const router = new Router({
         keepAlive: false
       },
       component: () => import("@views/shop/GoodsCon.vue")
-    },
-    {
-      path: "/shop/storeList/:gonames?",
-      name: "StoreList",
-      meta: {
-        title: "门店列表",
-        keepAlive: false
-      },
-      component: () => import("@views/shop/StoreList.vue")
     },
     {
       path: "/goods_list",
