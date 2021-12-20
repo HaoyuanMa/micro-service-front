@@ -117,7 +117,6 @@ export default {
         this.$set(this.scoreList[0], "index", -1);
         this.$set(this.scoreList[1], "index", -1);
         this.expect = "";
-        this.uploadPictures = [];
         this.getDetail();
       }
     }
