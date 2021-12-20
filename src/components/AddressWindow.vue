@@ -2,7 +2,8 @@
   <div>
     <div class="address-window" :class="value === true ? 'on' : ''">
       <div class="title">
-        选择地址<span class="iconfont icon-guanbi" @click="closeAddress"></span>
+        {{ titleText
+        }}<span class="iconfont icon-guanbi" @click="closeAddress"></span>
       </div>
       <div class="list" v-if="addressList.length">
         <div
@@ -49,15 +50,17 @@
   </div>
 </template>
 <script>
-import { getAddressList } from "@api/user";
+import { getAddressList, setDefaultAddress } from "@api/user";
 export default {
   name: "AddressWindow",
   props: {
     value: Boolean,
-    checked: Number
+    checked: Number,
+    toDefault: Boolean
   },
   data: function() {
     return {
+      titleText: "选择地址",
       addressList: [],
       current: 0,
       cartId: 0,
@@ -65,7 +68,11 @@ export default {
       couponId: 0
     };
   },
-  mounted: function() {},
+  mounted: function() {
+    if (this.toDefault) {
+      this.titleText = "设置默认地址";
+    }
+  },
   methods: {
     getAddressStr(item) {
       let p = item.province;
@@ -90,8 +97,19 @@ export default {
       this.$emit("redirect");
     },
     tapAddress: function(index) {
-      this.$emit("checked", this.addressList[index]);
-      this.$emit("input", false);
+      let that = this;
+      if (that.toDefault) {
+        setDefaultAddress(that.addressList[index].id).then(() => {
+          setTimeout(() => {
+            that.$dialog.toast({ mes: " 设置成功" });
+            that.$emit("checked", that.addressList[index]);
+            that.$emit("input", false);
+          }, 100);
+        });
+      } else {
+        that.$emit("checked", that.addressList[index]);
+        that.$emit("input", false);
+      }
     }
   }
 };

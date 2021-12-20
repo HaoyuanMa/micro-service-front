@@ -104,7 +104,11 @@ export function getAddress(id) {
  * */
 export function postAddress(data, id) {
   if (id) return request.post("update", { login: true });
-  else return request.post("user/useraddress/add", data);
+  else return request.post("user/useraddress/add", data, { login: true });
+}
+
+export function setDefaultAddress(id) {
+  return request.post("user/useraddress/set_default/" + id, { login: true });
 }
 
 /*
