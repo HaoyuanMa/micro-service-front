@@ -123,10 +123,7 @@ export default {
       logoUrl: ""
     };
   },
-  mounted: function() {
-    //this.getCode();
-    this.getLogoImage();
-  },
+  mounted: function() {},
   methods: {
     async register() {
       let that = this;
