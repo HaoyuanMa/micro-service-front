@@ -1,4 +1,10 @@
-import { cancelOrder, takeOrder, delOrder, payOrder } from "@api/order";
+import {
+  cancelOrder,
+  takeOrder,
+  delOrder,
+  payOrder,
+  finishAcc
+} from "@api/order";
 import dialog from "@utils/dialog";
 import { pay } from "@libs/wechat";
 
@@ -23,6 +29,25 @@ export function cancelOrderHandle(orderId) {
           })
           .catch(err => {
             dialog.error("取消失败");
+            reject(err);
+          });
+      }
+    });
+  });
+}
+
+export function finishAccHandle(orderId) {
+  return new Promise((resolve, reject) => {
+    dialog.confirm({
+      mes: "确认结束陪诊?",
+      opts() {
+        finishAcc(orderId)
+          .then(res => {
+            dialog.success("陪诊结束");
+            resolve(res);
+          })
+          .catch(err => {
+            dialog.error("失败");
             reject(err);
           });
       }
