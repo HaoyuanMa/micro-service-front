@@ -83,8 +83,8 @@ export function postOrderProduct(unique) {
 /**
  * 提交评价页面；
  */
-export function postOrderComment(data) {
-  return request.post("/order/comment", data, { login: false });
+export function postFellowComment(data) {
+  return request.post("/fellow/fellowcomment/add", data, { login: true });
 }
 /**
  * 门店列表
