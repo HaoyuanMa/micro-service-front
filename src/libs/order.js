@@ -9,7 +9,6 @@ import dialog from "@utils/dialog";
 import { pay } from "@libs/wechat";
 
 export function getTimeStr(timeStr) {
-  console.log(timeStr);
   let time =
     Date.parse(timeStr.slice(0, 10) + " " + timeStr.slice(11, 19)) +
     8 * 60 * 60 * 1000;
