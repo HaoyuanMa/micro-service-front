@@ -411,7 +411,6 @@ export default {
       if (!id) return this.$dialog.error("订单不存在");
       return getOrderDetail(id)
         .then(res => {
-          console.log(res);
           this.orderInfo = res.order;
           switch (this.orderInfo.status) {
             case 0:
@@ -420,16 +419,15 @@ export default {
             case 1:
               this.statusTime = this.orderInfo.paymentTime;
               break;
-            case 4:
+            case 2:
+              this.statusTime = this.orderInfo.commentTime;
+              break;
+            case 3:
               this.statusTime = this.orderInfo.finishTime;
               break;
             default:
               this.statusTime = this.orderInfo.createTime;
           }
-          //this.getOrderStatus();
-          // this.system_store = res.data.system_store || {};
-          // this.mapKey = res.data.mapKey;
-          //this.setOfflinePayStatus(this.orderInfo.offlinePayStatus);
           this.$nextTick(function() {
             let copybtn = document.getElementsByClassName("copy-data");
             const clipboard = new ClipboardJS(copybtn);
