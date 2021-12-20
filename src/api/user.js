@@ -150,7 +150,7 @@ export function getCommissionInfo(q, types) {
  * 用户修改信息
  * */
 export function postUserEdit(data) {
-  return request.post("/user/edit", data);
+  return request.post("/user/user/update", data, { login: true });
 }
 
 /*
