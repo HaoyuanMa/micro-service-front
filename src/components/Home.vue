@@ -16,10 +16,6 @@
           :to="'/'"
           class="iconfont icon-shouye-xianxing"
         ></router-link>
-        <router-link
-          :to="'/cart'"
-          class="iconfont icon-caigou-xianxing"
-        ></router-link>
         <router-link :to="'/user'" class="iconfont icon-yonghu1"></router-link>
       </div>
       <div @click="open" class="pictrueBox">
