@@ -84,16 +84,6 @@ const router = new Router({
       component: GoodsList
     },
     {
-      path: "/register",
-      name: "Register",
-      meta: {
-        title: "注册",
-        keepAlive: true
-      },
-      component: () =>
-        import(/* webpackChunkName: "login" */ "@views/user/Register.vue")
-    },
-    {
       path: "/change_password",
       name: "ChangePassword",
       meta: {

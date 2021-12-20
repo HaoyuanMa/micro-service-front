@@ -31,8 +31,8 @@ export function updateOrder(data) {
  * 订单统计数据
  * @returns {*}
  */
-export function getOrderData() {
-  return request.get("/order/data");
+export function getOrderStats() {
+  return request.get("order/order/stats", { login: true });
 }
 
 /**

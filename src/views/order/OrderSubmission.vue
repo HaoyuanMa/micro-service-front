@@ -269,7 +269,8 @@ export default {
       userAddressList: [],
       active: "weixin",
       isWeixin: _isWeixin,
-      showAddress: false
+      showAddress: false,
+      addressLoaded: false
     };
   },
   watch: {
