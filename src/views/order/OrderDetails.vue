@@ -25,73 +25,43 @@
           <div
             class="iconfont"
             :class="[
-              status.type === 0 || status.type === 9
-                ? 'icon-webicon318'
-                : 'icon-yuandianxiao',
-              status.type >= 0 ? 'font-color-red' : ''
+              orderInfo.status === 0 ? 'icon-webicon318' : 'icon-yuandianxiao',
+              orderInfo.status >= 0 ? 'font-color-red' : ''
             ]"
           ></div>
           <div
             class="line"
-            :class="{ 'bg-color-red': status.type > 0 && status.type != 9 }"
+            :class="{ 'bg-color-red': orderInfo.status > 0 }"
           ></div>
           <div
             class="iconfont"
             :class="[
-              status.type === 1 ? 'icon-webicon318' : 'icon-yuandianxiao',
-              status.type >= 1 && status.type != 6 && status.type != 9
-                ? 'font-color-red'
-                : ''
+              orderInfo.status === 1 ? 'icon-webicon318' : 'icon-yuandianxiao',
+              orderInfo.status >= 1 ? 'font-color-red' : ''
             ]"
           ></div>
           <div
             class="line"
-            :class="{
-              'bg-color-red':
-                status.type > 1 && status.type != 6 && status.type != 9
-            }"
-            v-if="orderInfo.shipping_type === 1"
+            :class="{ 'bg-color-red': orderInfo.status > 1 }"
           ></div>
           <div
             class="iconfont"
             :class="[
-              status.type === 2 ? 'icon-webicon318' : 'icon-yuandianxiao',
-              status.type >= 2 && status.type != 6 && status.type != 9
-                ? 'font-color-red'
-                : ''
-            ]"
-            v-if="orderInfo.shipping_type === 1"
-          ></div>
-          <div
-            class="line"
-            :class="{
-              'bg-color-red':
-                status.type > 2 && status.type != 6 && status.type != 9
-            }"
-          ></div>
-          <div
-            class="iconfont"
-            :class="[
-              status.type === 3 ? 'icon-webicon318' : 'icon-yuandianxiao',
-              status.type >= 3 && status.type != 6 && status.type != 9
-                ? 'font-color-red'
-                : ''
+              orderInfo.status === 2 ? 'icon-webicon318' : 'icon-yuandianxiao',
+              orderInfo.status >= 2 ? 'font-color-red' : ''
             ]"
           ></div>
           <div
             class="line"
             :class="{
-              'bg-color-red':
-                status.type > 3 && status.type != 6 && status.type != 9
+              'bg-color-red': orderInfo.status > 2
             }"
           ></div>
           <div
             class="iconfont"
             :class="[
-              status.type == 4 ? 'icon-webicon318' : 'icon-yuandianxiao',
-              status.type >= 4 && status.type != 6 && status.type != 9
-                ? 'font-color-red'
-                : ''
+              orderInfo.status === 3 ? 'icon-webicon318' : 'icon-yuandianxiao',
+              orderInfo.status >= 3 ? 'font-color-red' : ''
             ]"
           ></div>
         </div>
@@ -365,6 +335,7 @@ export default {
   props: {},
   data: function() {
     return {
+      id: this.$route.params.id,
       orderInfo: {},
       fellow: {},
       statusTime: "",
@@ -378,7 +349,6 @@ export default {
       orderTypeName: "普通订单",
       orderTypeNameStatus: true,
       offlineStatus: true,
-      id: this.$route.params.id,
       status: {},
       pay: false,
       payType: ["yue", "weixin"],
