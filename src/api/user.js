@@ -21,7 +21,7 @@ export function registerVerify(data) {
  * @param data object 用户手机号 验证码 密码
  */
 export function register(data) {
-  return request.post("/register", data, { login: false });
+  return request.post("user/user/register", data, { login: false });
 }
 
 /**
