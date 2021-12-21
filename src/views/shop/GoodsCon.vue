@@ -75,7 +75,7 @@
         <div class="settlement" @click="submitOrder" v-if="fellow.status === 0">
           下单
         </div>
-        <div class="buy bg-color-hui" v-else>陪诊员忙碌</div>
+        <div class="settlement bg-color-hui" v-else>陪诊员忙碌</div>
       </div>
     </div>
   </div>
