@@ -3,7 +3,7 @@
     <div class="evaluateItem" v-for="(item, index) in reply" :key="index">
       <div class="pic-text acea-row row-middle">
         <div class="pictrue">
-          <img :src="item.header" class="image" />
+          <img :src="item.userIcon" class="image" />
         </div>
         <div class="acea-row row-middle">
           <div class="name line1">{{ item.userNickName }}</div>

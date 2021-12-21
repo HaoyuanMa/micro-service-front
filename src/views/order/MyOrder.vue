@@ -47,7 +47,7 @@
       <div class="item" v-for="order in orderList" :key="order.id">
         <div class="title acea-row row-between-wrapper">
           <div class="acea-row row-middle">
-            {{ order.createTime }}
+            {{ getOrderTimeStr(order.createTime) }}
           </div>
           <div class="font-color-red">{{ getStatusStr(order.status) }}</div>
         </div>
@@ -123,7 +123,7 @@
 </template>
 <script>
 import { getOrderList, getOrderStats } from "@api/order";
-import { cancelOrderHandle, finishAccHandle } from "@libs/order";
+import { cancelOrderHandle, finishAccHandle, getTimeStr } from "@libs/order";
 import Loading from "@components/Loading";
 import { mapGetters } from "vuex";
 import GeneralWindow from "@components/GeneralWindow";
@@ -177,6 +177,9 @@ export default {
     });
   },
   methods: {
+    getOrderTimeStr(t) {
+      return getTimeStr(t);
+    },
     getStatusStr(s) {
       switch (s) {
         case 0:

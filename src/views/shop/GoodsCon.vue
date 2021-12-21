@@ -20,7 +20,7 @@
       </div>
     </div>
     <div id="title0">
-      <product-con-swiper :img-urls="fellow.slider_image"></product-con-swiper>
+      <img :src="fellow.header" width="100%" />
       <div class="wrapper">
         <div class="share acea-row row-between row-bottom">
           <div class="money">
@@ -50,7 +50,7 @@
     </div>
     <div class="product-intro userEvaluation" id="title3">
       <div class="title">陪诊员介绍</div>
-      <product-con-swiper :img-urls="fellow.slider_image"></product-con-swiper>
+      <img :src="fellow.header" width="100%" />
       <div class="label">
         <div>姓名: {{ fellow.username }}</div>
         <div>性别: {{ getGender(fellow.gender) }}</div>
@@ -82,7 +82,6 @@
 </template>
 <script>
 import "@assets/css/swiper.min.css";
-import ProductConSwiper from "@components/ProductConSwiper";
 import UserEvaluation from "@components/UserEvaluation";
 import debounce from "lodash.debounce";
 import { mapGetters } from "vuex";
@@ -92,7 +91,6 @@ let NAME = "GoodsCon";
 export default {
   name: NAME,
   components: {
-    ProductConSwiper,
     UserEvaluation
   },
   data: function() {

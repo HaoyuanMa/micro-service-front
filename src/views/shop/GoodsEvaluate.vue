@@ -172,7 +172,6 @@ export default {
         fellowName: fellow.username,
         userNickName: order.username,
         content: expect,
-        userIcon: fellow.header,
         commentType: score
       })
         .then(() => {

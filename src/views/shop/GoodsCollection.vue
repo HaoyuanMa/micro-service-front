@@ -7,7 +7,7 @@
         v-for="(item, index) in attendedFellowList"
         :key="index"
       >
-        <div class="pictrue"><img :src="item.fellowImage" /></div>
+        <div class="pictrue"><img :src="item.fellowImg" /></div>
         <div class="text acea-row row-column-between">
           <div class="infor line1">{{ item.fellowName }}</div>
           <div class="acea-row row-between-wrapper">
