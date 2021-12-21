@@ -34,6 +34,14 @@ export function getAttend(id) {
   return request.get("/user/userattendfellow/get/" + id, {}, { login: false });
 }
 
+export function getAttendList(page, limit) {
+  return request.get(
+    "/user/userattendfellow/list",
+    { page: page, limit: limit },
+    { login: true }
+  );
+}
+
 /*
  * 为你推荐
  * */

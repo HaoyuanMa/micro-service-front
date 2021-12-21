@@ -83,6 +83,16 @@
           </div>
         </div>
       </div>
+      <div class="myService order-submission">
+        <div class="userEvaluation" id="title1">
+          <router-link :to="{ path: '/collection' }" class="praise">
+            <div class="title acea-row row-between-wrapper">
+              <span>我的关注</span>
+              <span class="iconfont icon-jiantou"></span>
+            </div>
+          </router-link>
+        </div>
+      </div>
     </div>
     <div class="footer-line-height"></div>
     <AddressWindow
