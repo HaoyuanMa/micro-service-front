@@ -39,8 +39,8 @@ export function getOrderStats() {
  * 订单列表
  * @returns {*}
  */
-export function getOrderList(data) {
-  return request.get("/order/list", data);
+export function getOrderList(status, data) {
+  return request.get("order/order/list/" + status, data, { login: true });
 }
 
 /**

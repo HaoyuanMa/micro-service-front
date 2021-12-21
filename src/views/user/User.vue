@@ -22,7 +22,7 @@
       <div class="myOrder">
         <div class="title acea-row row-between-wrapper">
           <div>我的订单</div>
-          <router-link :to="'/order/list/'" class="allOrder">
+          <router-link :to="'/order/list/0'" class="allOrder">
             全部订单<span class="iconfont icon-jiantou"></span>
           </router-link>
         </div>

@@ -2,7 +2,7 @@ import MyOrder from "@views/order/MyOrder";
 
 export default [
   {
-    path: "/order/list",
+    path: "/order/list/:type",
     name: "MyOrder",
     meta: {
       title: "我的订单",
