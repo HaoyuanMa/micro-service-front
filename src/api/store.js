@@ -26,8 +26,12 @@ export function getProducts(q) {
 /*
  * 添加收藏
  * */
-export function toCollect(id, category) {
-  return request.get("/collect/add/" + id + "/" + category);
+export function toAttend(id) {
+  return request.get("/user/userattendfellow/set/" + id, {}, { login: true });
+}
+
+export function getAttend(id) {
+  return request.get("/user/userattendfellow/get/" + id, {}, { login: false });
 }
 
 /*
