@@ -40,7 +40,7 @@
           <router-link :to="{ path: '/order/list/' + 1 }" class="item">
             <div class="pictrue">
               <img src="@assets/images/dfh.png" />
-              <span class="order-status-num" v-if="orderStats.unpaid > 0">{{
+              <span class="order-status-num" v-if="orderStats.paid > 0">{{
                 orderStats.paid
               }}</span>
             </div>
