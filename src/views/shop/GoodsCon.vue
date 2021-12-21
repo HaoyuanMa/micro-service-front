@@ -68,7 +68,7 @@
         <div class="item" @click="setAttend">
           <div
             class="iconfont"
-            :class="fellow.userCollect ? 'icon-shoucang1' : 'icon-shoucang'"
+            :class="isAttend ? 'icon-shoucang1' : 'icon-shoucang'"
           ></div>
           <div>关注</div>
         </div>
@@ -85,9 +85,8 @@ import "@assets/css/swiper.min.css";
 import ProductConSwiper from "@components/ProductConSwiper";
 import UserEvaluation from "@components/UserEvaluation";
 import debounce from "lodash.debounce";
-import { getCollectAdd, getCollectDel } from "@api/user";
 import { mapGetters } from "vuex";
-import { getFellowDetail } from "@api/store";
+import { getAttend, getFellowDetail, toAttend } from "@api/store";
 
 let NAME = "GoodsCon";
 export default {
@@ -107,7 +106,8 @@ export default {
       navList: [],
       lock: false,
       navActive: 0,
-      opacity: 0
+      opacity: 0,
+      isAttend: false
     };
   },
   computed: mapGetters(["isLogin"]),
@@ -206,6 +206,9 @@ export default {
           that.$set(that, "reply", that.reply);
           that.navList = ["商品", "评价", "详情"];
           that.updateTitle();
+          getAttend(that.fellow.id).then(res => {
+            that.isAttend = res.status;
+          });
         })
         .catch(res => {
           that.$dialog.error(res.msg);
@@ -214,18 +217,11 @@ export default {
     },
     //todo: attend
     setAttend: function() {
-      let that = this,
-        id = that.fellowInfo.id,
-        category = "product";
-      if (that.fellowInfo.userCollect) {
-        getCollectDel(id, category).then(function() {
-          that.fellowInfo.userCollect = !that.fellowInfo.userCollect;
-        });
-      } else {
-        getCollectAdd(id, category).then(function() {
-          that.fellowInfo.userCollect = !that.fellowInfo.userCollect;
-        });
-      }
+      let id = this.fellow.id;
+      toAttend(id).then(() => {
+        this.isAttend = !this.isAttend;
+        this.$dialog.toast({ mes: " 操作成功" });
+      });
     },
     submitOrder: function() {
       this.$router.push({ path: "/order/submit/" + this.fellow.id });
