@@ -452,7 +452,7 @@ export default {
         last = history[history.length - 1] || {};
       if (last.name === "MyOrder") return this.$router.go(-1);
       else {
-        return this.$router.replace({ path: "/order/list/" });
+        return this.$router.replace({ path: "/order/list/0" });
       }
     },
     cancelOrder() {
