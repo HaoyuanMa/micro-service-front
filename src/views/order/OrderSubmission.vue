@@ -351,6 +351,8 @@ export default {
       let address = this.userAddress;
       createOrder({
         fellowId: this.fellowId,
+        fellowName: this.fellow.username,
+        fellowHeader: this.fellow.header,
         totalAmount: this.fellow.price,
         payType: this.active === "weixin" ? 0 : 1,
         sourceType: _isWeixin ? 0 : 1,
