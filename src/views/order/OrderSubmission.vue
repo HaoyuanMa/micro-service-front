@@ -18,7 +18,7 @@
           </div>
         </div>
         <div class="addressCon" v-else>
-          <div class="setaddress">设置收货地址</div>
+          <div class="setaddress">设置地址</div>
         </div>
         <div class="iconfont icon-jiantou"></div>
       </div>
