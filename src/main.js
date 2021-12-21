@@ -15,7 +15,7 @@ import "vue-ydui/dist/ydui.base.css";
 import "@assets/css/base.css";
 import "@assets/css/reset.css";
 import "@assets/css/style.css";
-import { isWeixin, parseQuery } from "@utils";
+import { parseQuery } from "@utils";
 import vueLazyLoad from "vue-lazyload";
 
 Vue.use(vueLazyLoad, {
@@ -57,8 +57,6 @@ if (urlSpread !== undefined) {
   }
 }
 
-const _isWechat = isWeixin();
-
 if (vconsole !== undefined) {
   if (vconsole === md5UnCrmeb && cookie.has(cookieName))
     cookie.remove(cookieName);
@@ -69,13 +67,6 @@ if (vconsole !== undefined && vconsole === md5Crmeb) {
   const module = () => import("vconsole");
   module().then(Module => {
     new Module.default();
-  });
-}
-
-if (_isWechat) {
-  const module = () => import("@libs/wechat");
-  module().then(Module => {
-    Module.default().then(() => Module.oAuth());
   });
 }
 

@@ -83,12 +83,10 @@
         <img src="@assets/images/noGood.png" class="image" />
       </div>
     </div>
-    <Recommend v-if="productList.length === 0 && where.page > 1"></Recommend>
   </div>
 </template>
 
 <script>
-import Recommend from "@components/Recommend";
 import { getProducts } from "@api/store";
 import debounce from "lodash.debounce";
 import Loading from "@components/Loading";
@@ -96,7 +94,6 @@ import Loading from "@components/Loading";
 export default {
   name: "GoodsList",
   components: {
-    Recommend,
     Loading
   },
   props: {},

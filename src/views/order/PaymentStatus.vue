@@ -41,7 +41,6 @@
 <script>
 import { mapGetters } from "vuex";
 import { getOrderDetail, updateOrder } from "@api/order";
-import { isWeixin } from "@utils";
 import { getTimeStr } from "@libs/order";
 
 const NAME = "PayMentStatus";
@@ -53,8 +52,7 @@ export default {
     return {
       id: "",
       toPay: 0,
-      orderInfo: {},
-      isWeixin: isWeixin()
+      orderInfo: {}
     };
   },
   watch: {

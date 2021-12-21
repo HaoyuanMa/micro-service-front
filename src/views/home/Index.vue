@@ -25,7 +25,6 @@
 </template>
 
 <script>
-import { isWeixin } from "@utils";
 import GoodsList from "@views/shop/GoodsList";
 
 export default {
@@ -34,7 +33,6 @@ export default {
   props: {},
   data: function() {
     return {
-      isWeixin: isWeixin(),
       followUrl: "",
       followHid: false,
       followCode: false,

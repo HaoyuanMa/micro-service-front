@@ -76,7 +76,6 @@
 </template>
 <script>
 import { mapGetters } from "vuex";
-import { isWeixin } from "@utils";
 import VueCoreImageUpload from "vue-core-image-upload";
 import { postUserEdit, getUser } from "@api/user";
 import cookie from "@utils/store/cookie";
@@ -89,18 +88,11 @@ export default {
   data: function() {
     return {
       userInfo: {},
-      headImage: "",
-      isWeixin: false
+      headImage: ""
     };
-  },
-  watch: {
-    $route(n) {
-      if (n.name === "PersonalData") this.$store.dispatch("USERINFO", true);
-    }
   },
   computed: mapGetters(["userInfo"]),
   mounted: function() {
-    this.isWeixin = isWeixin();
     this.getUserInfo();
   },
   methods: {
@@ -116,7 +108,6 @@ export default {
     submit: function() {
       postUserEdit(this.userInfo).then(
         res => {
-          this.$store.dispatch("USERINFO", true);
           this.$dialog.success(res.msg);
           this.$router.go(-1);
         },

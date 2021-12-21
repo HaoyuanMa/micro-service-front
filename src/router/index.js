@@ -2,12 +2,10 @@ import Vue from "vue";
 import Router from "vue-router";
 import module from "./module";
 import Index from "@views/home/Index";
-import Search from "@views/shop/GoodSearch";
 import GoodsList from "@views/shop/GoodsList";
 import NotDefined from "@views/NotDefined";
 import $store from "../store";
 import toLogin from "@libs/login";
-import Loading from "@views/Loading";
 
 Vue.use(Router);
 
@@ -34,16 +32,6 @@ const router = new Router({
         auth: true
       },
       component: () => import("@views/shop/GoodsCollection.vue")
-    },
-    {
-      path: "/search",
-      name: "GoodSearch",
-      meta: {
-        title: "搜索商品",
-        keepAlive: true,
-        backgroundColor: "#fff"
-      },
-      component: Search
     },
     {
       path: "/evaluate_list/:id",
@@ -84,28 +72,6 @@ const router = new Router({
       component: GoodsList
     },
     {
-      path: "/change_password",
-      name: "ChangePassword",
-      meta: {
-        title: "修改密码",
-        keepAlive: true,
-        backgroundColor: "#fff",
-        auth: true
-      },
-      component: () =>
-        import(/* webpackChunkName: "login" */ "@views/user/ChangePassword.vue")
-    },
-    {
-      path: "/retrieve_password",
-      name: "RetrievePassword",
-      meta: {
-        title: "找回密码",
-        keepAlive: true
-      },
-      component: () =>
-        import(/* webpackChunkName: "login" */ "@views/user/RetrievePassword.vue")
-    },
-    {
       path: "/login",
       name: "Login",
       meta: {
@@ -116,15 +82,6 @@ const router = new Router({
         import(/* webpackChunkName: "login" */ "@views/user/Login.vue")
     },
     ...module,
-    {
-      path: "/auth/:url",
-      name: "Loading",
-      meta: {
-        title: " 加载中",
-        keepAlive: true
-      },
-      component: Loading
-    },
     {
       path: "*",
       name: "NotDefined",
@@ -170,11 +127,7 @@ router.beforeEach((to, form, next) => {
 
   $store.commit("BACKGROUND_COLOR", backgroundColor || "#F5F5F5");
 
-  if (auth) {
-    $store.dispatch("USERINFO").then(() => {
-      next();
-    });
-  } else next();
+  next();
 });
 
 export default router;

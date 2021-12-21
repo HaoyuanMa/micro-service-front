@@ -24,15 +24,12 @@
 </template>
 
 <script>
-import { isWeixin } from "@/utils";
-
 export default {
   name: "Index",
   components: {},
   props: {},
   data: function() {
     return {
-      isWeixin: isWeixin(),
       followUrl: "",
       followHid: false,
       followCode: false,

@@ -243,11 +243,9 @@ import AddressWindow from "@components/AddressWindow";
 import { createOrder } from "@api/order";
 import { getFellowDetail } from "@api/store";
 import { getDefaultAddress } from "@api/user";
-import { isWeixin } from "@utils";
 import { mapGetters } from "vuex";
 
-const NAME = "OrderSubmission",
-  _isWeixin = isWeixin();
+const NAME = "OrderSubmission";
 export default {
   name: NAME,
   components: {
@@ -268,7 +266,6 @@ export default {
       userAddress: {},
       userAddressList: [],
       active: "weixin",
-      isWeixin: _isWeixin,
       showAddress: false,
       addressLoaded: false
     };
@@ -355,7 +352,7 @@ export default {
         fellowHeader: this.fellow.header,
         totalAmount: this.fellow.price,
         payType: this.active === "weixin" ? 0 : 1,
-        sourceType: _isWeixin ? 0 : 1,
+        sourceType: 0,
         status: 0,
         name: address.name,
         userPhone: address.phone,

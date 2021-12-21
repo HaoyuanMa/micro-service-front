@@ -108,7 +108,6 @@
 
 <script>
 import { getUser, getDefaultAddress } from "@api/user";
-import { isWeixin } from "@utils";
 import { getOrderStats } from "@api/order";
 import AddressWindow from "@components/AddressWindow";
 const NAME = "User";
@@ -125,7 +124,6 @@ export default {
       userAddress: {},
       addressLoaded: false,
       showAddress: false,
-      isWeixin: false,
       userInfo: {},
       orderStats: {
         unpaid: 0,
@@ -142,7 +140,6 @@ export default {
   },
   mounted: function() {
     this.getUserInfo();
-    this.isWeixin = isWeixin();
   },
   methods: {
     getAddressStr() {

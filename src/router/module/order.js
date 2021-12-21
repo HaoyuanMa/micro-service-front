@@ -12,16 +12,6 @@ export default [
     component: MyOrder
   },
   {
-    path: "/order/logistics/:id",
-    name: "Logistics",
-    meta: {
-      title: "物流信息",
-      keepAlive: true,
-      auth: true
-    },
-    component: () => import("@views/order/Logistics")
-  },
-  {
     path: "/order/detail/:id",
     name: "OrderDetails",
     meta: {
@@ -50,25 +40,5 @@ export default [
       auth: true
     },
     component: () => import("@views/order/PaymentStatus")
-  },
-  {
-    path: "/order/refund/:id",
-    name: "GoodsReturn",
-    meta: {
-      title: "申请退货",
-      keepAlive: true,
-      auth: true
-    },
-    component: () => import("@views/order/GoodsReturn.vue")
-  },
-  {
-    path: "/order/refund_list",
-    name: "ReturnList",
-    meta: {
-      title: "退货列表",
-      keepAlive: true,
-      auth: true
-    },
-    component: () => import("@views/order/ReturnList.vue")
   }
 ];

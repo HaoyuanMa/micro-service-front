@@ -1,6 +1,5 @@
 import store from "@utils/store/cookie";
 import { getUserInfo } from "@api/user";
-import dialog from "@utils/dialog";
 
 const LOGIN_KEY = "login_status";
 
@@ -70,8 +69,6 @@ const actions = {
           commit("UPDATE_USERINFO", res.data);
           reslove(res.data);
         });
-      }).catch(() => {
-        dialog.error("获取信息失败!");
       });
   }
 };

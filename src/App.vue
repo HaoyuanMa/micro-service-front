@@ -19,9 +19,6 @@ function isKeepAlive($route) {
 import Footer from "@components/Footer";
 import Home from "@components/Home";
 import { mapGetters } from "vuex";
-import { openShareAll } from "@libs/wechat";
-import { getShare } from "@api/public";
-import { isWeixin } from "@utils/index";
 
 export default {
   data() {
@@ -69,25 +66,8 @@ export default {
       console.log(this.transitionName, "change");
     }
   },
-  mounted: function() {
-    this.setOpenShare();
-  },
-  methods: {
-    setOpenShare: function() {
-      if (isWeixin()) {
-        getShare().then(res => {
-          var data = res.data.data;
-          var configAppMessage = {
-            desc: data.synopsis,
-            title: data.title,
-            link: location.href,
-            imgUrl: data.img
-          };
-          openShareAll(configAppMessage);
-        });
-      }
-    }
-  }
+  mounted: function() {},
+  methods: {}
 };
 </script>
 <style lang="scss">

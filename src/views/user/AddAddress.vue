@@ -77,7 +77,6 @@
 import { postAddress } from "@api/user";
 import attrs, { required, chs_phone } from "@utils/validate";
 import { validatorDefaultCatch } from "@utils/dialog";
-import { isWeixin } from "@utils";
 
 export default {
   components: {},
@@ -89,7 +88,6 @@ export default {
       id: 0,
       userAddress: { defaultStatus: 0 },
       address: {},
-      isWechat: isWeixin(),
       ready: false
     };
   },
