@@ -32,7 +32,7 @@ export function updateOrder(data) {
  * @returns {*}
  */
 export function getOrderStats() {
-  return request.get("order/order/stats", { login: true });
+  return request.get("order/order/stats", {}, { login: true });
 }
 
 /**
@@ -52,7 +52,7 @@ export function cancelOrder(id) {
 }
 
 export function finishAcc(id) {
-  return request.post("/order/order/finishAcc/" + id, { login: true });
+  return request.post("/order/order/finishAcc/" + id, {}, { login: true });
 }
 
 /**

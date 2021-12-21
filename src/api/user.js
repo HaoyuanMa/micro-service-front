@@ -5,7 +5,9 @@ import request from "@utils/request";
  * @param data object 用户账号密码
  */
 export function login(data) {
-  return request.post("user/user/login", data, { login: false });
+  let r = request.post("user/user/login", data, { login: false });
+  console.log(r);
+  return r;
 }
 
 /**
@@ -62,13 +64,13 @@ export function getMenuUser() {
 }
 
 export function getDefaultAddress() {
-  return request.get("/user/useraddress/default", { login: true });
+  return request.get("/user/useraddress/default", {}, { login: true });
 }
 /*
  * 地址列表
  * */
 export function getAddressList() {
-  return request.get("/user/useraddress/list", { login: true });
+  return request.get("/user/useraddress/list", {}, { login: true });
 }
 
 /*
@@ -108,7 +110,11 @@ export function postAddress(data, id) {
 }
 
 export function setDefaultAddress(id) {
-  return request.post("user/useraddress/set_default/" + id, { login: true });
+  return request.post(
+    "user/useraddress/set_default/" + id,
+    {},
+    { login: true }
+  );
 }
 
 /*
