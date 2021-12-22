@@ -257,7 +257,7 @@ export default {
   },
   data: function() {
     return {
-      fellowId: "",
+      fellowId: this.$route.params.id,
       fellow: {},
       contactsName: "",
       contactsTel: "",
@@ -273,12 +273,7 @@ export default {
   watch: {
     $route(n) {
       if (n.name === NAME) {
-        console.log(this.$route.query.pinkid);
-        if (this.$route.query.pinkid !== undefined)
-          this.pinkId = this.$route.query.pinkid;
-        else {
-          this.pinkId = 0;
-        }
+        this.fellowId = this.$route.params.id;
         this.getFellowInfo();
       }
     }
@@ -287,6 +282,7 @@ export default {
     let that = this;
     if (that.$route.params.id !== undefined)
       that.fellowId = that.$route.params.id;
+    console.log(that.fellowId);
     that.getFellowInfo().then(() => {
       that.getUserDefaultAddress();
     });
@@ -306,7 +302,7 @@ export default {
       let that = this;
       return getFellowDetail(that.fellowId)
         .then(data => {
-          that.$set(that, "fellow", data.fellow);
+          that.fellow = data.fellow;
         })
         .catch(res => {
           that.$dialog.error(res.msg);
@@ -329,6 +325,7 @@ export default {
       }
     },
     changeAddress(addressInfo) {
+      this.hasDefaultAddress = true;
       this.userAddress = addressInfo;
       this.contactsName = this.userAddress.name;
       this.contactsTel = this.userAddress.phone;

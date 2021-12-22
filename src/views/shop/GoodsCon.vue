@@ -213,7 +213,6 @@ export default {
           that.$router.go(-1);
         });
     },
-    //todo: attend
     setAttend: function() {
       let id = this.fellow.id;
       toAttend(id).then(() => {
@@ -222,6 +221,7 @@ export default {
       });
     },
     submitOrder: function() {
+      console.log("in GoodCon " + this.fellow.id);
       this.$router.push({ path: "/order/submit/" + this.fellow.id });
     }
   },

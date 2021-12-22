@@ -47,7 +47,7 @@
       ref="container"
     >
       <div
-        @click="goDetail(item)"
+        @click="goDetail(item.id)"
         v-for="(item, index) in productList"
         :key="index"
         class="item"
@@ -151,8 +151,8 @@ export default {
       return g === 1 ? "男" : "女";
     },
     // 商品详情跳转
-    goDetail(item) {
-      this.$router.push({ path: "/detail/" + item.id });
+    goDetail(id) {
+      this.$router.push({ path: "/detail/" + id });
     },
     updateTitle() {
       document.title = this.title || this.$route.meta.title;
