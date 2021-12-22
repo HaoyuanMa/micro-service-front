@@ -7,6 +7,10 @@ function resolve(dir) {
 }
 
 module.exports = {
+  devServer: {
+    host: "192.168.52.128",
+    port: 8081
+  },
   assetsDir: "h5",
   configureWebpack: config => {
     Object.assign(config.resolve.alias, {
